@@ -1,11 +1,15 @@
 import CalenderPicker from "../CalenderPicker/CalenderPicker"
+import { useNavigate } from "react-router-dom"
 export default function TableResults({plannerList})
 {
     console.log(plannerList)
+    const navigate = useNavigate();
+
     
     const handleClick = (e) =>
     {
         console.log(e.target.getAttribute('name'))
+        navigate(`/planner/${e.target.getAttribute('name')}`)
     }
 
 
@@ -16,14 +20,14 @@ export default function TableResults({plannerList})
                         >{item.title}</th>
                         <td className="px-6 py-4">{item.created_at}</td> 
                         <td className="px-6 py-4">{item.created_at}</td> 
-                        <td className="px-6 py-4">{parseInt(item.ref_count)}</td> 
+                        <td className="px-6 py-4">{parseInt(item.dayslength)}</td> 
                         <td className="px-6 py-4">Button?</td>                               
                     </tr>)
         })
     return(
 
         <div className="relative overflow-x-auto">
-            {/* <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-900 uppercase dark:text-gray-400">
                     <tr>
                         <th scope="col" className="px-6 py-3">
@@ -36,7 +40,7 @@ export default function TableResults({plannerList})
                             Updated At
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Total Locations
+                            Trip Length
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Action
@@ -47,7 +51,8 @@ export default function TableResults({plannerList})
                     <TableRow />
                     
                 </tbody>
-            </table> */}
+            </table>
+
         </div>
         )
 }

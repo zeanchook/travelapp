@@ -7,6 +7,8 @@ import TableResults from "../../components/TableResults/TableResults"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { useNavigate } from "react-router-dom"
+
 import CalenderPicker from "../../components/CalenderPicker/CalenderPicker"
 import { useAtomValue } from "jotai"
 import { currentSelectedRange } from "../../../atom"

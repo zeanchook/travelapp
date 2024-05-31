@@ -15,3 +15,10 @@ export const getPlanner = async() =>
     const response = await sendRequest(url,"GET")
     return response;         
 }
+
+export const getDetailPlanner = async(item) =>
+{
+    const url = `/api/planner/getDetails/${item}`
+    const response = await sendRequest(url,"GET")
+    return response;         
+}

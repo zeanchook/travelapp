@@ -8,6 +8,7 @@ import { Navigate } from "react-router-dom";
 
 import PlannerPage from "../PlannerPage/PlannerPage";
 import MapPage from "../../components/MapPage/HeatMap"
+import PlannerDetailPage from "../PlannerDetailPage/PlannerDetailPage";
 
 import { loginSts } from "../../../atom";
 import { useAtomValue } from "jotai";
@@ -37,7 +38,8 @@ function App() {
         
         <Routes>
           <Route path="/userprofile" element={<UserProfilePage/>}/>
-          <Route path="/" element={<PlannerPage/>}/>
+          <Route path="/planner" element={<PlannerPage/>}/>
+          <Route path="/planner/:plannerId" element={<PlannerDetailPage/>}/>
           <Route path="/map" element={<MapPage/>}/>
           <Route path="*" element={<Navigate to="/"  />} />
           {/* <Route path="/useredit" element={<OrderHistoryPage />} />
