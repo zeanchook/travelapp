@@ -49,6 +49,9 @@ const create = async (req,res) => {
         console.log(plannerItemsQueryResponse)
 
 
+        //return all items that just created 
+
+
         // const [responseResult] = response.rows
         // const { id } = responseResult
         // console.log(id)
@@ -60,7 +63,7 @@ const create = async (req,res) => {
     catch(error)
     {
         console.log(error)
-        res.status(500).json( error.detail );
+        res.status(500).json( {error: error.detail, hint: error.hint} );
     }
 };
 
@@ -97,7 +100,79 @@ const index = async (req,res) => {
     }
 };
 
+
+const getDetails = async (req,res) => {
+
+    console.log("passes thru")
+    const { id } = req.params
+    console.log("here,",id)
+    const pool = new Pool({
+        connectionString,
+        });
+
+    const currentUser = getUser(req, res);
+    const [ user ] = currentUser
+    const { name } = user
+    console.log(name)
+    
+    // // JOIN planner_items ON planner_items.planner_id = planner.id
+    try
+    {
+        
+        const text = `SELECT * FROM users
+        JOIN planner ON users.id = planner.user_id
+        WHERE users.name = $1`;
+        const values = ["s"];
+        const response = await pool.query(text,values);
+        console.log("this is the response", response.rows)
+        // console.log(response.rows.length)
+        // res.status(201).json(response.rows);
+       
+    }
+    catch(error)
+    {
+        // debug("error: %o", error);
+        console.log(error)
+        res.status(500).json( {error: error.detail} );
+    }
+};
+
+const verification = async(req,res,next) =>
+{
+    const pool = new Pool({
+        connectionString,
+        });
+
+    const currentUser = getUser(req, res);
+    const [ user ] = currentUser
+    const { name } = user
+    console.log(name)
+    
+    try
+    {
+        
+        const text = `SELECT * FROM users
+        JOIN planner ON users.id = planner.user_id
+        WHERE users.name = $1`;
+        const values = ["s"];
+        const response = await pool.query(text,values);
+        console.log("this is the response", response.rows)
+        next();
+        // console.log(response.rows.length)
+        // res.status(201).json(response.rows);
+       
+    }
+    catch(error)
+    {
+        // debug("error: %o", error);
+        console.log(error)
+        res.status(500).json( {error: error.detail} );
+    }
+}
+
 module.exports = {
     create,
-    index
+    index,
+    getDetails,
+    verification
 }
