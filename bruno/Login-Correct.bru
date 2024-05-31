@@ -1,0 +1,27 @@
+meta {
+  name: Login -> Correct
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/api/users/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "simon@ga.co",
+    "password": "123"
+  }
+}
+
+script:post-response {
+  const { atob } = require("atob");
+  bru.setEnvVar("token",res.body);
+  const user = atob(res.body.split(".")[1]);
+  bru.setEnvVar("user",user)
+  
+  
+}

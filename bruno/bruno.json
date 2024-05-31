@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "sei-50-mern",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
