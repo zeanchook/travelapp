@@ -22,3 +22,11 @@ export const getDetailPlanner = async(item) =>
     const response = await sendRequest(url,"GET")
     return response;         
 }
+
+export const addLocationItem = async(planneritemsid,body) =>
+{
+    console.log(planneritemsid,body)
+    const url = `/api/planner/add/${planneritemsid}/itinerary`
+    const response = await sendRequest(url,"POST",body)
+    return response;         
+}

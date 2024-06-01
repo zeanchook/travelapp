@@ -42,8 +42,8 @@ const create = async (req,res) => {
             `INSERT INTO planner_items (date,planner_id) 
             SELECT generate_series(p.startdate, p.enddate, INTERVAL '1 day') , $1
             FROM planner AS p
-            WHERE p.id=$1`,
-            values:[plannerItems.id]}
+            WHERE p.plannerid=$1`,
+            values:[plannerItems.plannerid]}
 
         const plannerItemsQueryResponse = await pool.query(query);
         console.log(plannerItemsQueryResponse)
@@ -58,7 +58,7 @@ const create = async (req,res) => {
         // const plannerQuery = "INSERT INTO planner (user_id, title) VALUES ($1, $2) RETURNING title,created_at"
         // const plannerValues = [id,item]
         // const plannerResponse = await pool.query(plannerQuery,plannerValues);
-        // res.status(201).json(plannerResponse.rows);
+        res.status(201).json(plannerItemsQueryResponse.rows);
     }
     catch(error)
     {
@@ -119,14 +119,15 @@ const getDetails = async (req,res) => {
     try
     {
         
-        const text = `SELECT * FROM users
+        const text = `SELECT name,date,title,startdate,enddate,locations,status,planner.plannerid,planner_items.planner_items_id FROM users
         JOIN planner ON users.id = planner.user_id
-        WHERE users.name = $1`;
-        const values = ["s"];
+        JOIN planner_items ON planner_items.planner_id = planner.plannerid
+        WHERE users.name=$1 AND planner_items.planner_id=$2`;
+        const values = [name,id];
         const response = await pool.query(text,values);
         console.log("this is the response", response.rows)
         // console.log(response.rows.length)
-        // res.status(201).json(response.rows);
+        res.status(201).json(response.rows);
        
     }
     catch(error)
@@ -170,9 +171,49 @@ const verification = async(req,res,next) =>
     }
 }
 
+
+const addtoItinerary = async (req,res) => {
+
+    console.log("passes thru")
+    const { planneritemsid } = req.params
+    console.log("here,",planneritemsid)
+    const { planner_items_id, name, locations} = req.body
+    console.log(planner_items_id, name, locations)
+    console.log(typeof(name))
+    // console.log(req.body)
+    const pool = new Pool({
+        connectionString,
+        });
+
+    // const currentUser = getUser(req, res);
+    // const [ user ] = currentUser
+    // const { name } = user
+    // console.log(name)
+    
+    // // JOIN planner_items ON planner_items.planner_id = planner.id
+    try
+    {
+        
+        const text = `INSERT INTO planner_location_items (planner_items_id,name,locations)  VALUES($1,$2,$3)`;
+        const values = [parseInt(planner_items_id), name, locations];
+        const response = await pool.query(text,values);
+        console.log("this is the response", response.rows)
+        // // console.log(response.rows.length)
+        res.status(201).json(response.rows);
+       
+    }
+    catch(error)
+    {
+        // debug("error: %o", error);
+        console.log(error)
+        res.status(500).json( {error: error.detail} );
+    }
+};
+
 module.exports = {
     create,
     index,
     getDetails,
-    verification
+    verification,
+    addtoItinerary
 }
