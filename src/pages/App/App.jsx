@@ -15,6 +15,8 @@ import { useAtomValue } from "jotai";
 
 import UserProfilePage from "../UserProfilePage/UserProfilePage";
 
+import NewPage from "../NewPage";
+
 const log = debug("mern:pages:App:App");
 
 function App() {
@@ -31,7 +33,7 @@ function App() {
   }
   console.log(user)
   return (
-    <div>
+    <div >
       <NavBar />
       {/* <div > */}
         
@@ -41,6 +43,7 @@ function App() {
           <Route path="/planner" element={<PlannerPage/>}/>
           <Route path="/planner/:plannerId" element={<PlannerDetailPage/>}/>
           <Route path="/map" element={<MapPage/>}/>
+          <Route path="/new" element={<NewPage/>}/>
           <Route path="*" element={<Navigate to="/"  />} />
           {/* <Route path="/useredit" element={<OrderHistoryPage />} />
           <Route path="/orders/new" element={<NewOrderPage />} />
