@@ -138,8 +138,11 @@ const getDetails = async (req,res) => {
     }
 };
 
-const verification = async(req,res,next) =>
+const getEachDetails = async(req,res) =>
 {
+    console.log("passes thru")
+    const { id } = req.params
+    console.log("here,",id)
     const pool = new Pool({
         connectionString,
         });
@@ -149,18 +152,20 @@ const verification = async(req,res,next) =>
     const { name } = user
     console.log(name)
     
+    // // JOIN planner_items ON planner_items.planner_id = planner.id
     try
     {
         
         const text = `SELECT * FROM users
         JOIN planner ON users.id = planner.user_id
-        WHERE users.name = $1`;
-        const values = ["s"];
+        JOIN planner_items ON planner_items.planner_id = planner.plannerid
+        JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
+        WHERE users.name=$1 AND planner_items.planner_id=$2`;
+        const values = [name,id];
         const response = await pool.query(text,values);
         console.log("this is the response", response.rows)
-        next();
         // console.log(response.rows.length)
-        // res.status(201).json(response.rows);
+        res.status(201).json(response.rows);
        
     }
     catch(error)
@@ -170,6 +175,39 @@ const verification = async(req,res,next) =>
         res.status(500).json( {error: error.detail} );
     }
 }
+
+// const verification = async(req,res,next) =>
+// {
+//     const pool = new Pool({
+//         connectionString,
+//         });
+
+//     const currentUser = getUser(req, res);
+//     const [ user ] = currentUser
+//     const { name } = user
+//     console.log(name)
+    
+//     try
+//     {
+        
+//         const text = `SELECT * FROM users
+//         JOIN planner ON users.id = planner.user_id
+//         WHERE users.name = $1`;
+//         const values = ["s"];
+//         const response = await pool.query(text,values);
+//         console.log("this is the response", response.rows)
+//         next();
+//         // console.log(response.rows.length)
+//         // res.status(201).json(response.rows);
+       
+//     }
+//     catch(error)
+//     {
+//         // debug("error: %o", error);
+//         console.log(error)
+//         res.status(500).json( {error: error.detail} );
+//     }
+// }
 
 
 const addtoItinerary = async (req,res) => {
@@ -210,10 +248,122 @@ const addtoItinerary = async (req,res) => {
     }
 };
 
+
+const patchItinerary = async (req,res) => {
+
+//    console.log(req.body)
+
+const { A_PlannerItemID , A_PlannerLocID , B_PlannerItemID , B_PlannerLocID} = req.body
+console.log(A_PlannerItemID , A_PlannerLocID , B_PlannerItemID , B_PlannerLocID)
+    // console.log(req.body)
+    const pool = new Pool({
+        connectionString,
+        });
+
+
+    try
+    {
+        //query1
+        const text1 = `UPDATE planner_location_items
+        SET planner_items_id = $1 WHERE planner_location_items.plannerlocationitemsid = $2`;
+        const values1 = [A_PlannerItemID, B_PlannerLocID];
+        const response1 = await pool.query(text1,values1);
+        console.log("this is the response", response1.rows)
+
+        //query2
+        const text2 = `UPDATE planner_location_items
+        SET planner_items_id = $1 WHERE planner_location_items.plannerlocationitemsid = $2`;
+        const value2 = [B_PlannerItemID, A_PlannerLocID];
+        const response2 = await pool.query(text2,value2);
+        console.log("this is the response", response2.rows)
+    //     // // console.log(response.rows.length)
+        // res.status(201).json(response2.rows);
+       
+    }
+    catch(error)
+    {
+        // debug("error: %o", error);
+        console.log(error)
+        res.status(500).json( {error: error.detail} );
+    }
+};
+
+const patchDaysItinerary = async (req,res) => {
+
+    //    console.log(req.body)
+    
+    const { A_PlannerItemID , A_PlannerLocID , B_PlannerItemID} = req.body
+    console.log(A_PlannerItemID , A_PlannerLocID , B_PlannerItemID)
+        // console.log(req.body)
+        const pool = new Pool({
+            connectionString,
+            });
+    
+        try
+        {
+            //query1
+            const text1 = `UPDATE planner_location_items
+            SET planner_items_id = $3 
+            WHERE planner_location_items.plannerlocationitemsid = $2
+            AND planner_location_items.planner_items_id = $1`;
+            const values1 = [A_PlannerItemID , A_PlannerLocID , B_PlannerItemID];
+            const response1 = await pool.query(text1,values1);
+            console.log("this is the response", response1.rows)
+    
+
+            res.status(201).json(response1.rows);
+           
+        }
+        catch(error)
+        {
+            // debug("error: %o", error);
+            console.log(error)
+            res.status(500).json( {error: error.detail} );
+        }
+    };
+
+
+
+
+const testing = async (req,res) => {
+
+    
+    const pool = new Pool({
+        connectionString,
+        });
+
+        // JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
+    try
+    {
+        
+        const text = `SELECT * FROM users
+        JOIN planner ON users.id = planner.user_id
+        JOIN planner_items ON planner_items.planner_id = planner.plannerid
+        JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
+        WHERE users.name=$1 AND planner_items.planner_id=$2`;
+        
+        const values = ["admin",2];
+        const response = await pool.query(text,values);
+        console.log("this is the response", response.rows)
+        res.json(response.rows)
+       
+    }
+    catch(error)
+    {
+        // debug("error: %o", error);
+        console.log(error)
+        res.status(500).json( {error: error.detail} );
+    }
+};
+
 module.exports = {
     create,
     index,
     getDetails,
-    verification,
-    addtoItinerary
+    // verification,
+    addtoItinerary,
+    testing,
+    getEachDetails,
+    patchItinerary,
+    patchDaysItinerary
 }
