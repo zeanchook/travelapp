@@ -17,10 +17,10 @@ router.get("/getEachDetails/:id",plannerController.getEachDetails);
 //add item into a day of itinerary
 router.post("/add/:planneritemsid/itinerary",plannerController.addtoItinerary);
 
-//patch ordering of day itinerary
+//patch the ordering of a Day itinerary
 router.patch("/update/order",plannerController.patchItinerary);
 
-//patch itenerary to move item around.
+//patch itenerary to move between days
 router.patch("/update/itinerary",plannerController.patchDaysItinerary);
 
 router.get("/testing",plannerController.testing);
