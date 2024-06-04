@@ -8,16 +8,40 @@ import { reload } from "../../../atom";
 import { useAtom } from "jotai";
 import HeatMap from "../../components/MapPage/HeatMap";
 import LoadingPopup from "../../components/LoadingPopup/LoadingPopup";
+import MarkerMap from "../../components/MarkerMap/MarkerMap"
+
+import { markerDir } from "../../../atom";
 
 import { current, produce } from "immer";
+import { patchHandleDrop } from "../../utilities/planner-local-service";
 
+const ICON = `M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,4.5,2,10c0,2,0.6,3.9,1.6,5.4c0,0.1,0.1,0.2,0.2,0.3
+  c0,0,0.1,0.1,0.1,0.2c0.2,0.3,0.4,0.6,0.7,0.9c2.6,3.1,7.4,7.6,7.4,7.6s4.8-4.5,7.4-7.5c0.2-0.3,0.5-0.6,0.7-0.9
+  C20.1,15.8,20.2,15.8,20.2,15.7z`;
+
+const pinStyle = {
+  cursor: 'pointer',
+  fill: '#d00',
+  stroke: 'none',
+};
+
+const textStyle = {
+    fontSize: 14,
+    fontWeight: 'bold',
+    fill: '#fff',
+    textAlign: 'center',
+  };
 
 export default function PlannerDetailPage()
 {
     const { plannerId } = useParams();
     const [plannerDetails, setPlannerDetails] = useState("")
     const [plannerItem, setPlannerItem] = useState("")
+
+
     const [reloadState , setReloadState] = useAtom(reload);
+
+    const [markerDirection , setmarkerDirection] = useAtom(markerDir)
 
 
     const [dragItem , setDragItem] = useState("")
@@ -38,7 +62,7 @@ export default function PlannerDetailPage()
           setLoadingSts(false)
         }
         getPlannerList(plannerId);
-      }, []);
+      }, [plannerId,reloadState]);
 
     //   plannerId,reloadState
 
@@ -46,7 +70,10 @@ export default function PlannerDetailPage()
 const handleDrag = (e,item) =>
 {
     e.stopPropagation();
+    // console.log("dragging",item)
+    // console.log("test")
     setDragItem(item)
+    // console.log(e)
 }
 
 const handleDrop = async(e,item) =>
@@ -63,22 +90,21 @@ const handleDrop = async(e,item) =>
     if(data.A_PlannerItemID === data.B_PlannerItemID && data.A_PlannerLocID !== data.B_PlannerLocID)
     {
         console.log("only item inside");
-
-        const updatedState = produce(plannerItem, (draft) => {
-            console.log(plannerItem)
-            const currentDragItem = plannerItem.findIndex(x=>x.plannerlocationitemsid === data.A_PlannerLocID)
-            const currentdropItem = plannerItem.findIndex(x=>x.plannerlocationitemsid === data.B_PlannerLocID)
-            console.log(currentDragItem,currentdropItem)
-            console.log(draft[currentDragItem].plannerlocationitemsid,draft[currentdropItem].plannerlocationitemsid)
-            draft[currentDragItem].plannerlocationitemsid = data.B_PlannerLocID;
-            draft[currentdropItem].plannerlocationitemsid = data.A_PlannerLocID;
-            console.log(draft[currentDragItem].plannerlocationitemsid,draft[currentdropItem].plannerlocationitemsid)
-          });
-        // const resposne  = await patchOrderLocation(data);
-        // console.log(resposne)
-        console.log("handleDrop")
-        console.log(updatedState)
+        const updatedState = patchHandleDrop(plannerItem,data)
         setPlannerItem(updatedState)
+
+        const filtering = updatedState.filter(item => item.date === markerDirection.date)
+        console.log(filtering)
+        console.log(updatedState,markerDirection)
+
+        const markerupdatedState = produce(markerDirection, (draft) => {
+            // console.log(draft[currentDragItem].date,draft[currentdropItem].date)
+           draft.selected = filtering
+          });
+        setmarkerDirection(markerupdatedState)
+
+        const resposne  = await patchOrderLocation(data);
+        console.log(resposne)
         // setReloadState(item)
     }
    
@@ -125,11 +151,8 @@ const handleDropDay = async(e,item) =>
         draft[currentDragItem].date = draft[currentdropItem].date 
         console.log(draft[currentDragItem].date,draft[currentdropItem].date )
       });
-    console.log("hello")
-    console.log(updatedState[currentDragItem],updatedState[currentdropItem])
-    console.log("handleDropDay")
     setPlannerItem(updatedState);
-
+    
     // console.log(data)
     const response  = await patchItinneraryItem(data);
     console.log(response);
@@ -186,15 +209,24 @@ const Filtering = ({date}) => {
     if (filteredItems && filteredItems.length > 0) {
         // console.log("here?",filteredItems)
       return filteredItems?.map((item,idx) => 
-      <li className="mb-10 ms-4" key={idx} style={{backgroundColor:"grey"}}>
-            <div className="absolute w-3 h-3 bg-orange-200 rounded-full 
-            mt-1.5 -start-1.5 border border-white dark:border-black-900 dark:bg-black-700" ></div>
-      <div draggable value={item}
-      onDragStart={(e)=> handleDrag(e,item)} 
-      onDrop={(e)=>{handleDrop(e,item)}} 
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      key={idx}>{idx+1} {item.name}</div>
+      <li className="mb-10 ms-4" key={idx} style={{backgroundColor:""}}>
+           
+           <div style={{display:"flex",alignItems:"center"}}
+            draggable value={item}
+            onDragStart={(e)=> handleDrag(e,item)} 
+            onDrop={(e)=>{handleDrop(e,item)}} 
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            >
+           <div>
+            <svg className="" height={30} viewBox="0 0 24 24" style={pinStyle}>
+                <path d={ICON} />
+                <text x="9" y="14" style={textStyle}>{idx + 1}</text>
+            </svg>
+            </div>
+             
+      <div 
+      key={idx}>{idx+1} {item.name}</div></div>
       </li>);
     } 
     
@@ -218,11 +250,22 @@ const Filtering = ({date}) => {
     }
 }
 
+    const handleCurrentDay = (e,item) =>
+    {
+        e.preventDefault();
+        e.stopPropagation();
+        const data = plannerItem.filter(plannerItem => plannerItem.date === item.date)
+        console.log(data)
+        setmarkerDirection(({selected : data , type: "plannerview", date: item.date}))
+        // console.log(item,plannerItem)
+    }
+
     const List = () => plannerDetails?.map((item,idx) =>
         {
             return(<div className="mb-10 ms-4" key={idx} style={{backgroundColor:"yellow",padding:"20px"}}
             onDrop={(e)=>handleDropDay(e, item, "dropday")}
             onDragOver={handleDragOver}
+            onClick={(e) => handleCurrentDay(e,item)}
             >
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.locations}</h3>
             <p className="mb-4 text-base font-normal text-black-500 dark:text-black-400">
@@ -237,22 +280,23 @@ const Filtering = ({date}) => {
     return( 
     <div style={{ display: 'flex', height: '100vh' }}>
     {/* <div style={{display:"flex",flexDirection:"row",backgroundColor:"yellow"}}> */}
-    <div style={{ width: '50%', overflowY: 'scroll', padding: "20px" }}>
+    <div style={{ width: '50%', overflowY: 'scroll', padding: "10px" }}>
     {plannerDetails &&
                      
        <List/>
    }
     </div>
 
-    {/* <div style={{ width: '50%'}}>        
+    <div style={{ width: '50%'}}>        
         <div style={{height:"50%",backgroundColor: 'grey',overflowY: 'scroll'}}>
         <SearchPlaces plannerDetails={plannerDetails}/>
         </div>
-        <div style={{height:"50%",backgroundColor: 'yellow'}}> */}
-        {/* <HeatMap/> */}
-        {/* </div> */}
+        <div style={{height:"50%",backgroundColor: 'yellow'}}> 
+         {/* <HeatMap/> */}
+         <MarkerMap/>
+         </div>
 
-    {/* </div> */}
+    </div>
     {/* {loadingSts && <LoadingPopup />} */}
     </div>)
 }
