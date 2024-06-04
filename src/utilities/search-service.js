@@ -17,6 +17,14 @@ export const searchDetail = async(item) =>
     return response;         
 }
 
+export const searchVeryDetail = async(item) =>
+{
+    const query = encodeURIComponent(item)
+    const url = `/api/searchmap/getVeryDetailResult/${query}`
+    const response = await sendRequest(url)
+    return response;         
+}
+
 // https://maps.googleapis.com/maps/api/place/autocomplete/json?input=c&key=AIzaSyBX7rQJzbDPH7BbvmsihiXmrFFLyoeJFCs
 
 // https://api.locationiq.com/v1/autocomplete?key=pk.c9766614c64017cb84d3952132452df0&q=kbmall&limit=5&dedupe=1&
