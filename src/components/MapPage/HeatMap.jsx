@@ -25,8 +25,8 @@ useEffect(() => {
 }, []);
 
   return (
-    <div style={{maxWidth:"50%",maxHeight:"10px"}}>
-      <MapGL 
+    
+      <MapGL style={{height:"100%"}}
         initialViewState={{
           latitude: 40,
           longitude: -100,
@@ -41,7 +41,7 @@ useEffect(() => {
           </Source>
         )}
       </MapGL>
-    </div>
+   
 
   );
 }
