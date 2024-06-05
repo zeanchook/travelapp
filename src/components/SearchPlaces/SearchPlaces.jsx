@@ -164,7 +164,7 @@ export default function SearchPlaces({plannerDetails})
             const { geometry } = selectedResult;
             console.log(geometry.location)
 
-            const data = {planner_items_id:selectedDay,name: selectedResult.name, locations: [geometry.location.lat,geometry.location.lng]}
+            const data = {planner_items_id:selectedDay,name: selectedResult.name, locations: [geometry.location.lng,geometry.location.lat]}
             console.log(data)
 
             const response = await addLocationItem(selectedDay,data)
