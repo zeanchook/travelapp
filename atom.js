@@ -10,5 +10,11 @@ const currentSelectedRange = atom({
     default: "yes"
 })
 
+const searchResult = atom("")
 
-export { loginSts,currentSelectedRange };
+const reload = atom(false);
+
+const markerDir = atom({selected : "" , type: "result"})
+
+
+export { loginSts,currentSelectedRange, reload , searchResult , markerDir };
