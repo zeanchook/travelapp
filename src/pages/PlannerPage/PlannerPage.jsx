@@ -1,7 +1,7 @@
 import SearchPlaces from "../../components/SearchPlaces/SearchPlaces"
 import HeatMap from "../../components/MapPage/HeatMap"
 // import { useState } from "react"
-import { createPlanner, getPlanner } from "../../utilities/planner-service"
+import { createPlanner, getPlanner, getStats } from "../../utilities/planner-service"
 import { useEffect, useState } from "react"
 import TableResults from "../../components/TableResults/TableResults"
 import { ToastContainer, toast } from 'react-toastify';
@@ -12,6 +12,9 @@ import { useNavigate } from "react-router-dom"
 import CalenderPicker from "../../components/CalenderPicker/CalenderPicker"
 import { useAtom , useAtomValue } from "jotai"
 import { currentSelectedRange } from "../../../atom"
+
+import UserCard from "../../components/UserCard/UserCard"
+
 import dayjs from "dayjs"
 
 import { loginSts } from "../../../atom"
@@ -30,6 +33,8 @@ export default function PlannerPage()
     const [newForm, setnewForm] = useState(false);
     const [formValue , setFormValue] = useState("")
     const [loadingSts ,setLoadingSts] = useState(false);
+
+    const [userStats ,setUserStats] = useState("")
   
     const dateValue = useAtomValue(currentSelectedRange);
 
@@ -40,6 +45,7 @@ export default function PlannerPage()
     const handleCreate = () =>
     {
       setnewForm(true)
+      setPlannerList("")
     }
 
     const handleChange = (e) =>
@@ -67,6 +73,10 @@ export default function PlannerPage()
     const handleGetPlanner = async(e) => 
     {
       setLoadingSts(true);
+      setmyheatMap(false)
+      setheatMap(false)
+      setPlannerList("")
+      setnewForm(false)
       let results = await getPlanner();
       console.log(results)
       setPlannerList(results)
@@ -80,10 +90,40 @@ export default function PlannerPage()
         setmyheatMap(true)
         console.log(currentUser)
         const [ user ] = currentUser
-
         setselectedPlanner({selected : user , type: "userheatmap"})
       }
     }
+
+    useEffect(() => {
+     async function getAllDetails(name)
+     {
+              const response = await getStats(name)
+              console.log(response)
+              
+              let titleCount = 0;
+      let completedCount = 0;
+      const titleSet = new Set();
+      console.log(titleSet)
+      for (let i = 0; i < response.length; i++) {
+        if (response[i].status === 'Completed') {
+          completedCount++;
+        }
+        if (!titleSet.has(response[i].title)) {
+          titleSet.add(response[i].title);
+          titleCount++;
+        }
+      }
+
+      const result = { title: titleCount, completed: completedCount };
+      console.log(result)
+      setUserStats(result)
+     }
+     if(currentUser)
+     {
+      getAllDetails(currentUser);
+     }
+     
+    }, []);
 
       // console.log(plannerList)
     
@@ -107,19 +147,18 @@ export default function PlannerPage()
     console.log(plannerList)
     
 
-    return(<>
-        <div>
-        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-        onClick={handleCreate}
-        >Create a Planner</button>
-        <button type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-        onClick={handleGetPlanner}
-        >My Planner</button>
-        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-        onClick={handleGetHeatMap}
-        >Your HeatMap</button>
-        
+    return(<div style={{ display: 'flex', height: '100vh' }}>
+      <div style={{ width: '50%', overflowY: 'scroll', marginBottom: "300px", display:"flex", flexDirection: "column", justifyContent:"center"}}>
+          <UserCard 
+          currentUser={currentUser} 
+          userStats={userStats} 
+          handleGetHeatMap={handleGetHeatMap}
+          handleCreate={handleCreate}
+          handleGetPlanner={handleGetPlanner}
+          />
         </div>
+        <div style={{ width: '50%', overflowY: 'scroll', marginRight: "100px", marginBottom: "200px", display:"flex", flexDirection: "column",justifyContent:"center"}}>
+        
         {newForm &&
         <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
         <div className="mb-5">
@@ -161,7 +200,8 @@ export default function PlannerPage()
 
         {myheatMap &&  <HeatMap selectedPlanner={selectedPlanner}/>}
   
-        </>
+        </div>
+        </div>
         )
     
 }
