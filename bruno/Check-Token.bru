@@ -5,11 +5,18 @@ meta {
 }
 
 get {
-  url: http://localhost:3000/api/myusers/
-  body: none
+  url: http://localhost:3000/api/myusers/login
+  body: json
   auth: bearer
 }
 
 auth:bearer {
   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY2NDJkMTliNzNmNGNlMzdiNGQ4ZDUzYiIsIm5hbWUiOiJzaW1vbiIsImVtYWlsIjoic2ltb25AZ2EuY28iLCJjcmVhdGVkQXQiOiIyMDI0LTA1LTE0VDAyOjUxOjA3LjgyMFoiLCJ1cGRhdGVkQXQiOiIyMDI0LTA1LTE0VDAyOjUxOjA3LjgyMFoiLCJfX3YiOjB9LCJpYXQiOjE3MTU2NjUxMjYsImV4cCI6MTcxNTY2NjMyNn0.lgrd0eDLWaQYEtV093vTPRRiHHVmWkpnqg74UWRjyD0
+}
+
+body:json {
+    {
+      "email": "test",
+      "password": "ccdxxddddssc"
+    }
 }
