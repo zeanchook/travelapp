@@ -55,7 +55,7 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
                     }
                 return item
                 }))
-            const response = await patchPlannerStatus(plannerid,{status: "Completed"})
+            const response = await patchPlannerStatus(plannerid,{status: patchStatus})
             console.log(response)
         }
     }
