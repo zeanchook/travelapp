@@ -23,6 +23,9 @@ router.patch("/update/order",plannerController.patchItinerary);
 //patch itenerary to move between days
 router.patch("/update/itinerary",plannerController.patchDaysItinerary);
 
+//delete a planner 
+router.delete("/delete/planner/:id",plannerController.deletePlanner);
+
 router.get("/testing",plannerController.testing);
 
 module.exports = router;

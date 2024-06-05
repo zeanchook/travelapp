@@ -51,3 +51,10 @@ export const patchItinneraryItem = async(body) =>
     const response = await sendRequest(url,"PATCH",body)
     return response;         
 }
+
+export const deletePlanner = async(id) =>
+{
+    const url = `/api/planner/delete/planner/${id}`
+    const response = await sendRequest(url,"DELETE")
+    return response; 
+}

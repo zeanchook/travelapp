@@ -119,7 +119,7 @@ const getDetails = async (req,res) => {
     try
     {
         
-        const text = `SELECT name,date,title,startdate,enddate,locations,status,planner.plannerid,planner_items.planner_items_id FROM users
+        const text = `SELECT name,date,title,startdate,enddate,locations,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
         JOIN planner ON users.id = planner.user_id
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         WHERE users.name=$1 AND planner_items.planner_id=$2`;
@@ -263,19 +263,26 @@ console.log(A_PlannerItemID , A_PlannerLocID , B_PlannerItemID , B_PlannerLocID)
 
     try
     {
-        //query1
+        //temp value
         const text1 = `UPDATE planner_location_items
-        SET planner_items_id = $1 WHERE planner_location_items.plannerlocationitemsid = $2`;
-        const values1 = [A_PlannerItemID, B_PlannerLocID];
+        SET plannerlocationitemsid = $1 WHERE planner_items_id = $2 AND planner_location_items.plannerlocationitemsid = $3`;
+        const values1 = [0, A_PlannerItemID, A_PlannerLocID];
         const response1 = await pool.query(text1,values1);
         console.log("this is the response", response1.rows)
 
-        //query2
+        //update B
         const text2 = `UPDATE planner_location_items
-        SET planner_items_id = $1 WHERE planner_location_items.plannerlocationitemsid = $2`;
-        const value2 = [B_PlannerItemID, A_PlannerLocID];
+        SET plannerlocationitemsid = $1 WHERE planner_items_id = $2 AND planner_location_items.plannerlocationitemsid = $3`;
+        const value2 = [A_PlannerLocID, B_PlannerItemID, B_PlannerLocID];
         const response2 = await pool.query(text2,value2);
         console.log("this is the response", response2.rows)
+
+        //update A
+        const text3 = `UPDATE planner_location_items
+        SET plannerlocationitemsid = $1 WHERE planner_items_id = $2 AND planner_location_items.plannerlocationitemsid = $3`;
+        const value3 = [B_PlannerLocID, A_PlannerItemID, 0];
+        const resposne3 = await pool.query(text3,value3);
+        console.log("this is the response", resposne3.rows)
     //     // // console.log(response.rows.length)
         // res.status(201).json(response2.rows);
        
@@ -322,6 +329,56 @@ const patchDaysItinerary = async (req,res) => {
         }
     };
 
+    const deletePlanner = async (req,res) => {
+
+        //    console.log(req.body)
+        
+        const { id } = req.params
+        console.log(id)
+            const pool = new Pool({
+                connectionString,
+                });
+        
+            try
+            {
+                // delete planner location items first
+                const text1 = `DELETE FROM planner_location_items
+                WHERE planner_items_id IN (SELECT planner_items_id FROM planner_items WHERE planner_id 
+                    IN (SELECT plannerid FROM planner WHERE plannerid = $1))`;
+                const values1 = [id];
+
+                const response1 = await pool.query(text1,values1);
+                console.log("this is the response", response1.rows)
+
+
+                // delete planner_items
+                const text2 = `DELETE FROM planner_items
+                WHERE planner_items.planner_id IN (SELECT plannerid FROM planner WHERE plannerid = $1)`;
+                const values2 = [id];
+
+                const response2 = await pool.query(text2,values2);
+                console.log("this is the response", response2.rows)
+
+                // delete planner_items
+                const text3 = `DELETE FROM planner
+                WHERE plannerid = $1`;
+                const values3 = [id];
+
+                const response3 = await pool.query(text3,values3);
+                console.log("this is the response", response3.rows)
+
+                console.log("this is the response", response3)
+                res.status(201).json(response3.rows);
+               
+            }
+            catch(error)
+            {
+                // debug("error: %o", error);
+                console.log(error)
+                res.status(500).json( {error: error.detail} );
+            }
+        };
+
 
 
 
@@ -365,5 +422,6 @@ module.exports = {
     testing,
     getEachDetails,
     patchItinerary,
-    patchDaysItinerary
+    patchDaysItinerary,
+    deletePlanner
 }
