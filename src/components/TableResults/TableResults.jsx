@@ -1,3 +1,4 @@
+import { deletePlanner } from "../../utilities/planner-service";
 import CalenderPicker from "../CalenderPicker/CalenderPicker"
 import { useNavigate } from "react-router-dom"
 export default function TableResults({plannerList, setheatMapDisplay, setselectedPlanner})
@@ -12,6 +13,18 @@ export default function TableResults({plannerList, setheatMapDisplay, setselecte
         navigate(`/planner/${e.target.getAttribute('name')}`)
     }
 
+    const handleDelete = async(e,item) =>
+    {
+        e.preventDefault();
+        console.log(item)
+        if (item)
+        {
+            const { plannerid } = item
+            await deletePlanner(plannerid)
+        }
+        
+    }
+
 
     const TableRow = () => plannerList?.map((item,idx) =>
            {return(<tr className="bg-white dark:bg-gray-800" key={idx} >
@@ -21,10 +34,16 @@ export default function TableResults({plannerList, setheatMapDisplay, setselecte
                         <td className="px-6 py-4">{item.created_at}</td> 
                         <td className="px-6 py-4">{item.created_at}</td> 
                         <td className="px-6 py-4">{parseInt(item.dayslength)}</td> 
-                        <td className="px-6 py-4"><button onClick={(e) => 
+                        <td className="px-6 py-4"><button className="btn btn-accent"
+                            onClick={(e) => 
                             {setheatMapDisplay(true)
                             setselectedPlanner({selected : item , type: "select"})}
-                            }>View HeatMap</button></td>                               
+                            }>Heat Map</button>
+                            <button className="btn btn-secondary">Completed</button>
+                            <button className="btn btn-error"
+                            onClick={(e) => handleDelete(e,item)}
+                            >Delete</button>
+                            </td>                               
                     </tr>)
         })
     return(
