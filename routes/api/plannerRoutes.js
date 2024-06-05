@@ -26,6 +26,9 @@ router.patch("/update/itinerary",plannerController.patchDaysItinerary);
 //delete a planner 
 router.delete("/delete/planner/:id",plannerController.deletePlanner);
 
+// patch/set a trip status => completed
+router.patch("/update/planner/:id",plannerController.patchPlanner);
+
 router.get("/testing",plannerController.testing);
 
 module.exports = router;

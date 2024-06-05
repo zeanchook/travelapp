@@ -1,7 +1,6 @@
-import { deletePlanner } from "../../utilities/planner-service";
+import { deletePlanner, patchPlannerStatus } from "../../utilities/planner-service";
 import CalenderPicker from "../CalenderPicker/CalenderPicker"
 import { useNavigate } from "react-router-dom"
-import { globalPlannerList } from "../../../atom";
 import { useAtomValue } from "jotai";
 
 export default function TableResults({plannerList, handleDeletes,setheatMapDisplay, setselectedPlanner})
@@ -14,7 +13,7 @@ export default function TableResults({plannerList, handleDeletes,setheatMapDispl
         navigate(`/planner/${e.target.getAttribute('name')}`)
     }
 
-    const handleDelete = (e,item) =>
+    const handleDelete = async(e,item) =>
     {
         e.preventDefault();
         console.log(item)
@@ -23,11 +22,25 @@ export default function TableResults({plannerList, handleDeletes,setheatMapDispl
             const { plannerid } = item;
             const newPlannerList = plannerList.filter((planner) => planner.plannerid!== plannerid);
             handleDeletes(newPlannerList)
-            // await deletePlanner(plannerid);
+            // const response = await deletePlanner(plannerid);
+            // console.log(response)
         }
         
     }
 
+    console.log(plannerList)
+
+    const handleStatus = async(e,item) =>
+    {
+        console.log(item)
+        if(item)
+        {
+            const { plannerid , status } = item;
+            console.log(plannerid , status)
+
+            await patchPlannerStatus(plannerid,{status: "Completed"})
+        }
+    }
 
     const TableRow = () => plannerList?.map((item,idx) =>
            {return(<tr className="bg-white dark:bg-gray-800" key={idx} >
@@ -37,12 +50,15 @@ export default function TableResults({plannerList, handleDeletes,setheatMapDispl
                         <td className="px-6 py-4">{item.created_at}</td> 
                         <td className="px-6 py-4">{item.created_at}</td> 
                         <td className="px-6 py-4">{parseInt(item.dayslength)}</td> 
+                        <td className="px-6 py-4">{item.status === null ? "Planned" : item.status}</td> 
                         <td className="px-6 py-4"><button className="btn btn-accent"
                             onClick={(e) => 
                             {setheatMapDisplay(true)
                             setselectedPlanner({selected : item , type: "select"})}
                             }>Heat Map</button>
-                            <button className="btn btn-secondary">Completed</button>
+                            <button className="btn btn-secondary"
+                            onClick={(e) => handleStatus(e,item)}
+                            >Completed</button>
                             <button className="btn btn-error"
                             onClick={(e) => handleDelete(e,item)}
                             >Delete</button>
@@ -66,6 +82,9 @@ export default function TableResults({plannerList, handleDeletes,setheatMapDispl
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Trip Length
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                            Trip Status
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Action

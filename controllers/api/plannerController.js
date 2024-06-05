@@ -380,6 +380,40 @@ const patchDaysItinerary = async (req,res) => {
         };
 
 
+        const patchPlanner = async (req,res) => {
+
+            //    console.log(req.body)
+            
+            const { id } = req.params
+            const { status } = req.body
+            console.log(status)
+            console.log(id)
+                const pool = new Pool({
+                    connectionString,
+                    });
+
+                
+            
+                try
+                {
+                    const text1 = `update planner
+                    set status = $1 where plannerid = $2`;
+                    const values1 = [status,id];
+    
+                    const response1 = await pool.query(text1,values1);
+                    console.log("this is the response", response1.rows)
+                    res.status(201).json(response1.rows);
+               
+                }
+                catch(error)
+                {
+                    // debug("error: %o", error);
+                    console.log(error)
+                    res.status(500).json( {error: error.detail} );
+                }
+            };
+
+
 
 
 const testing = async (req,res) => {
@@ -423,5 +457,6 @@ module.exports = {
     getEachDetails,
     patchItinerary,
     patchDaysItinerary,
-    deletePlanner
+    deletePlanner,
+    patchPlanner
 }
