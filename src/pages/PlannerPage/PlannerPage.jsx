@@ -14,12 +14,16 @@ import { useAtom , useAtomValue } from "jotai"
 import { currentSelectedRange } from "../../../atom"
 import dayjs from "dayjs"
 
+import { loginSts } from "../../../atom"
+
 
 
 export default function PlannerPage()
 {
     const [plannerList, setPlannerList] = useState("");
-    const [heatMap, setheatMap] = useState("");
+    const [heatMap, setheatMap] = useState(false);
+
+    const [myheatMap, setmyheatMap] = useState(false);
 
     const [selectedPlanner , setselectedPlanner] = useState("")
 
@@ -29,6 +33,8 @@ export default function PlannerPage()
   
     const dateValue = useAtomValue(currentSelectedRange);
 
+    const currentUser = useAtomValue(loginSts)
+    console.log(currentUser)
     const numDays = parseInt(dayjs(dateValue.endDate).format('DD/MM/YYYY'))-parseInt(dayjs(dateValue.startDate).format('DD/MM/YYYY'));
     console.log(plannerList)
     const handleCreate = () =>
@@ -69,7 +75,14 @@ export default function PlannerPage()
 
     const handleGetHeatMap = () =>
     {
-      setheatMap(true)
+      if(currentUser)
+      {
+        setmyheatMap(true)
+        console.log(currentUser)
+        const [ user ] = currentUser
+
+        setselectedPlanner({selected : user , type: "userheatmap"})
+      }
     }
 
       // console.log(plannerList)
@@ -101,7 +114,7 @@ export default function PlannerPage()
         >Create a Planner</button>
         <button type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
         onClick={handleGetPlanner}
-        >Your Planner</button>
+        >My Planner</button>
         <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
         onClick={handleGetHeatMap}
         >Your HeatMap</button>
@@ -135,7 +148,7 @@ export default function PlannerPage()
 
         {loadingSts && <Loading />}
 
-        {plannerList && 
+        {(plannerList && !myheatMap ) && 
         <TableResults 
         plannerList={plannerList}
         setPlannerList={setPlannerList}
@@ -144,7 +157,9 @@ export default function PlannerPage()
           setselectedPlanner={setselectedPlanner}
         />}
 
-        {heatMap && <HeatMap selectedPlanner={selectedPlanner}/>}
+        {(heatMap && !myheatMap) && <HeatMap selectedPlanner={selectedPlanner}/>}
+
+        {myheatMap &&  <HeatMap selectedPlanner={selectedPlanner}/>}
   
         </>
         )
