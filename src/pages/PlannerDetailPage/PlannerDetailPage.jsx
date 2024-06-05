@@ -20,7 +20,7 @@ const ICON = `M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,
   C20.1,15.8,20.2,15.8,20.2,15.7z`;
 
 const pinStyle = {
-  cursor: 'pointer',
+  cursor: 'grab',
   fill: '#d00',
   stroke: 'none',
 };
@@ -109,7 +109,7 @@ const handleDrop = async(e,item) =>
     }
    
 }
-console.log(plannerItem)
+
 const handleDragOver =(e)=>
 {
     e.preventDefault();
@@ -209,8 +209,8 @@ const Filtering = ({date}) => {
     if (filteredItems && filteredItems.length > 0) {
         // console.log("here?",filteredItems)
       return filteredItems?.map((item,idx) => 
-      <li className="mb-10 ms-4" key={idx} style={{backgroundColor:""}}>
-           
+     
+      <li className="mb-10 ms-4 " key={idx} style={{backgroundColor:""}}>
            <div style={{display:"flex",alignItems:"center"}}
             draggable value={item}
             onDragStart={(e)=> handleDrag(e,item)} 
@@ -221,13 +221,14 @@ const Filtering = ({date}) => {
            <div>
             <svg className="" height={30} viewBox="0 0 24 24" style={pinStyle}>
                 <path d={ICON} />
-                <text x="9" y="14" style={textStyle}>{idx + 1}</text>
+                <text x="7.5" y="15" style={textStyle}>{idx + 1}</text>
             </svg>
             </div>
              
-      <div 
-      key={idx}>{idx+1} {item.name}</div></div>
-      </li>);
+      <div style={{margin:"5px"}}
+      key={idx}>{item.name}</div></div>
+      </li>
+      );
     } 
     
     else {
@@ -262,16 +263,17 @@ const Filtering = ({date}) => {
 
     const List = () => plannerDetails?.map((item,idx) =>
         {
-            return(<div className="mb-10 ms-4" key={idx} style={{backgroundColor:"yellow",padding:"20px"}}
+            return(<div className="mb-10 ms-4" key={idx} style={{backgroundColor:"yellow",padding:"20px",cursor:"pointer"}}
             onDrop={(e)=>handleDropDay(e, item, "dropday")}
             onDragOver={handleDragOver}
             onClick={(e) => handleCurrentDay(e,item)}
             >
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.locations}</h3>
             <p className="mb-4 text-base font-normal text-black-500 dark:text-black-400">
+                
                 {` Day ${idx+1}`}   {dayjs(item.date).format("ddd,DD/MMM/YY")}
             </p>
-                <ol className="relative border-s border-orange-200 dark:border-orange-700" >                  
+                <ol className="relative" >                  
                    {Filtering && <Filtering date={item.date}/>}
                 </ol>
             </div>)
@@ -280,11 +282,13 @@ const Filtering = ({date}) => {
     return( 
     <div style={{ display: 'flex', height: '100vh' }}>
     {/* <div style={{display:"flex",flexDirection:"row",backgroundColor:"yellow"}}> */}
-    <div style={{ width: '50%', overflowY: 'scroll', padding: "10px" }}>
-    {plannerDetails &&
-                     
+    
+    <div style={{ width: '50%', overflowY: 'scroll', padding: "10px", display:"flex", flexDirection: "column"}}>
+    <h1 style={{fontSize:"25px", backgroundColor:"grey"}}
+    >{plannerDetails && plannerDetails[0]?.title}</h1>
+    <div>{plannerDetails &&          
        <List/>
-   }
+   }</div>
     </div>
 
     <div style={{ width: '50%'}}>        
