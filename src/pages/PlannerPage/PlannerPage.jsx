@@ -87,11 +87,9 @@ export default function PlannerPage()
   </div>)
     }
 
-    const handleDeletes = (items) =>
-    {
-      console.log(items)
-      setPlannerList(items)
-    }
+ 
+
+
 
     console.log(plannerList)
     
@@ -140,7 +138,8 @@ export default function PlannerPage()
         {plannerList && 
         <TableResults 
         plannerList={plannerList}
-          handleDeletes = {handleDeletes}
+        setPlannerList={setPlannerList}
+
           setheatMapDisplay={setheatMap} 
           setselectedPlanner={setselectedPlanner}
         />}

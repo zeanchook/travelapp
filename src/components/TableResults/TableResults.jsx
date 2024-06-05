@@ -3,7 +3,7 @@ import CalenderPicker from "../CalenderPicker/CalenderPicker"
 import { useNavigate } from "react-router-dom"
 import { useAtomValue } from "jotai";
 
-export default function TableResults({plannerList, handleDeletes,setheatMapDisplay, setselectedPlanner})
+export default function TableResults({plannerList, setPlannerList,setheatMapDisplay, setselectedPlanner})
 {
     const navigate = useNavigate();
 
@@ -21,7 +21,7 @@ export default function TableResults({plannerList, handleDeletes,setheatMapDispl
         {
             const { plannerid } = item;
             const newPlannerList = plannerList.filter((planner) => planner.plannerid!== plannerid);
-            handleDeletes(newPlannerList)
+            setPlannerList(newPlannerList)
             // const response = await deletePlanner(plannerid);
             // console.log(response)
         }
@@ -37,8 +37,16 @@ export default function TableResults({plannerList, handleDeletes,setheatMapDispl
         {
             const { plannerid , status } = item;
             console.log(plannerid , status)
-
-            await patchPlannerStatus(plannerid,{status: "Completed"})
+            setPlannerList(plannerList.map(item => 
+                {
+                    if(item.plannerid === plannerid)
+                    {
+                        item.status = "Completed"
+                    }
+                return item
+                }))
+            const response = await patchPlannerStatus(plannerid,{status: "Completed"})
+            console.log(response)
         }
     }
 
