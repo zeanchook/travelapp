@@ -58,3 +58,10 @@ export const deletePlanner = async(id) =>
     const response = await sendRequest(url,"DELETE")
     return response; 
 }
+
+export const patchPlannerStatus = async(id,body) =>
+{
+    const url = `/api/planner/update/planner/${id}`
+    const response = await sendRequest(url,"PATCH",body)
+    return response; 
+}
