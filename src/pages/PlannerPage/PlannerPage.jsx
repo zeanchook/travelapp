@@ -10,15 +10,17 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom"
 
 import CalenderPicker from "../../components/CalenderPicker/CalenderPicker"
-import { useAtomValue } from "jotai"
+import { useAtom , useAtomValue } from "jotai"
 import { currentSelectedRange } from "../../../atom"
 import dayjs from "dayjs"
+
+
 
 export default function PlannerPage()
 {
     const [plannerList, setPlannerList] = useState("");
     const [heatMap, setheatMap] = useState("");
-    
+
     const [selectedPlanner , setselectedPlanner] = useState("")
 
     const [newForm, setnewForm] = useState(false);
@@ -28,7 +30,7 @@ export default function PlannerPage()
     const dateValue = useAtomValue(currentSelectedRange);
 
     const numDays = parseInt(dayjs(dateValue.endDate).format('DD/MM/YYYY'))-parseInt(dayjs(dateValue.startDate).format('DD/MM/YYYY'));
-    
+    console.log(plannerList)
     const handleCreate = () =>
     {
       setnewForm(true)
@@ -56,7 +58,7 @@ export default function PlannerPage()
       // }
     }
  
-    const handleGetPlanner = async() => 
+    const handleGetPlanner = async(e) => 
     {
       setLoadingSts(true);
       let results = await getPlanner();
@@ -85,7 +87,13 @@ export default function PlannerPage()
   </div>)
     }
 
-    
+    const handleDeletes = (items) =>
+    {
+      console.log(items)
+      setPlannerList(items)
+    }
+
+    console.log(plannerList)
     
 
     return(<>
@@ -128,10 +136,15 @@ export default function PlannerPage()
         
 
         {loadingSts && <Loading />}
-        {plannerList && <TableResults 
-        plannerList={plannerList} 
-        setheatMapDisplay={setheatMap} 
-        setselectedPlanner={setselectedPlanner}/>}
+
+        {plannerList && 
+        <TableResults 
+        plannerList={plannerList}
+          handleDeletes = {handleDeletes}
+          setheatMapDisplay={setheatMap} 
+          setselectedPlanner={setselectedPlanner}
+        />}
+
         {heatMap && <HeatMap selectedPlanner={selectedPlanner}/>}
   
         </>

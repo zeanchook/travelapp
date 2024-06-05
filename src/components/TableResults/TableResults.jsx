@@ -1,26 +1,29 @@
 import { deletePlanner } from "../../utilities/planner-service";
 import CalenderPicker from "../CalenderPicker/CalenderPicker"
 import { useNavigate } from "react-router-dom"
-export default function TableResults({plannerList, setheatMapDisplay, setselectedPlanner})
+import { globalPlannerList } from "../../../atom";
+import { useAtomValue } from "jotai";
+
+export default function TableResults({plannerList, handleDeletes,setheatMapDisplay, setselectedPlanner})
 {
-    console.log(plannerList)
     const navigate = useNavigate();
 
-    
     const handleClick = (e) =>
     {
         console.log(e.target.getAttribute('name'))
         navigate(`/planner/${e.target.getAttribute('name')}`)
     }
 
-    const handleDelete = async(e,item) =>
+    const handleDelete = (e,item) =>
     {
         e.preventDefault();
         console.log(item)
         if (item)
         {
-            const { plannerid } = item
-            await deletePlanner(plannerid)
+            const { plannerid } = item;
+            const newPlannerList = plannerList.filter((planner) => planner.plannerid!== plannerid);
+            handleDeletes(newPlannerList)
+            // await deletePlanner(plannerid);
         }
         
     }
