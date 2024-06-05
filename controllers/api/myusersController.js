@@ -50,7 +50,7 @@ const login = async (req,res) => {
     {
         const { email, password } = req.body;
         console.log(email)
-        const text = "SELECT name,password FROM users WHERE email=$1";
+        const text = "SELECT name,password,usertype FROM users WHERE email=$1";
         const values = [email];
         const response = await pool.query(text, values);
         const responseResult = response.rows
