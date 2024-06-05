@@ -32,16 +32,26 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
 
     const handleStatus = async(e,item) =>
     {
+        e.preventDefault();
         console.log(item)
         if(item)
         {
             const { plannerid , status } = item;
             console.log(plannerid , status)
+            let patchStatus = ""
+            if(status === null || status === "Planned")
+            {
+                patchStatus = "Completed"
+            }
+            else{
+                patchStatus = "Planned"
+            }
+
             setPlannerList(plannerList.map(item => 
                 {
                     if(item.plannerid === plannerid)
                     {
-                        item.status = "Completed"
+                        item.status = patchStatus
                     }
                 return item
                 }))
@@ -64,9 +74,13 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
                             {setheatMapDisplay(true)
                             setselectedPlanner({selected : item , type: "select"})}
                             }>Heat Map</button>
-                            <button className="btn btn-secondary"
+                            {item.status === "Completed" ? <button className="btn btn-secondary"
                             onClick={(e) => handleStatus(e,item)}
-                            >Completed</button>
+                            >Completed</button> : 
+                            <button className="btn btn-success"
+                            onClick={(e) => handleStatus(e,item)}
+                            >Not Yet?</button>
+                            }
                             <button className="btn btn-error"
                             onClick={(e) => handleDelete(e,item)}
                             >Delete</button>
