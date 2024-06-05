@@ -5,7 +5,7 @@ import MapGL, {Source, Layer} from 'react-map-gl';
 // import ControlPanel from './control-panel';
 import {heatmapLayer} from './map-style';
 import {myVariable} from "./datatest"
-import { getMapData } from "../../utilities/mapdata-service";
+import { getMapData, getMapDataByUser } from "../../utilities/mapdata-service";
 import "./stylesheet.css"
 
 const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN; // Set your mapbox token here
@@ -25,15 +25,47 @@ useEffect(() => {
   async function getPlannerList(plannerid) {
     let results = await getMapData(plannerid);
     console.log(results)
+    if(results.features !== null)
+    {
+      console.log("null?")
     setResults(results)
+    }
+    else{
+      console.log("ehre?")
+      setResults(myVariable)
+    }
   }
+
+
+  async function getPlanenrListByName(name) {
+    let results = await getMapDataByUser(name);
+    console.log(results)
+    if(results.features !== null)
+    {
+      console.log("null?")
+      setResults(results)
+    }
+    else{
+      console.log("ehre?")
+      setResults(myVariable)
+    }
+  }
+
 console.log(selectedPlanner)
   if(selectedPlanner)
   {
-    console.log(selectedPlanner)
-    // console.log(selectedPlanner.select)
-    // const { plannerid } = selectedPlanner.select
-    getPlannerList(selectedPlanner.selected.plannerid)}
+    if(selectedPlanner.type === "selected")
+    {
+      console.log(selectedPlanner)
+      getPlannerList(selectedPlanner.selected.plannerid)
+    }
+    else if (selectedPlanner.type === "userheatmap")
+    {
+      console.log(selectedPlanner)
+      getPlanenrListByName(selectedPlanner.selected.name)
+    }
+    
+  }
 }, [selectedPlanner]);
 
   return (
