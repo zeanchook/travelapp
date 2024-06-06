@@ -1,5 +1,6 @@
 import debug from "debug";
 import * as usersAPI from "./users-api";
+import sendRequest from "./send-request";
 
 const log = debug("mern:utilities:users-service");
 
@@ -61,3 +62,17 @@ export const checkToken = async () => {
   console.log(dateStr);
   return new Date(dateStr);
 };
+
+export const getAllUsers = async() =>
+{
+    const url = `/api/myusers/index`
+    const response = await sendRequest(url,"GET")
+    return response;         
+}
+
+export const deleteUsers = async(item) =>
+{
+    const url = `/api/myusers/delete`
+    const response = await sendRequest(url,"DELETE",item)
+    return response;         
+}

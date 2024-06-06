@@ -73,6 +73,55 @@ const login = async (req,res) => {
     }
 };
 
+const index = async (req,res) => {
+    // debug("body: %o", req.body);
+      
+    const pool = new Pool({
+        connectionString,
+        });
+
+    try
+    {
+      
+        const text = "SELECT * FROM users";
+        const response = await pool.query(text);
+        const responseResult = response.rows
+        console.log(responseResult)
+        res.status(201).json(responseResult);
+       
+    }
+    catch(error)
+    {
+        debug("error: %o", error);
+        res.status(500).json( error.detail );
+    }
+};
+
+const deleteUser = async (req,res) => {
+    // debug("body: %o", req.body);
+    const pool = new Pool({
+        connectionString,
+        });
+    const ids = req.body
+    console.log(ids)
+    try
+    {
+        
+        const text = `DELETE FROM users WHERE id = ANY($1) RETURNING *`;
+        const values = [ids]
+        const response = await pool.query(text,values);
+        const responseResult = response.rows
+        console.log(responseResult)
+        // res.status(201).json(responseResult);
+       
+    }
+    catch(error)
+    {
+        debug("error: %o", error);
+        res.status(500).json( error.detail );
+    }
+};
+
 
 
 //   const create = async (req,res) => {
@@ -116,4 +165,6 @@ const login = async (req,res) => {
   module.exports = {
     create,
     login,
+    index,
+    deleteUser
   };
