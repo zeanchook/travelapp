@@ -6,6 +6,7 @@ import { useAtomValue } from 'jotai';
 // import "../../components/MarkerMap/stylesheet.css"
 import { markerDir } from '../../../atom';
 
+// import {MapRef} from 'react-map-gl';
 
 // import {myVariable} from "./datatest"
 import Map, {
@@ -17,138 +18,38 @@ import Map, {
   GeolocateControl
 } from 'react-map-gl';
 
+// import { MapRef } from 'react-map-gl/dist/esm/mapbox/create-ref';
 
 // import ControlPanel from './control-panel';
 import Pin from './pin';
+import { markerService, processData } from './markermap-service';
+
+import {useRef, useCallback} from 'react';
 
 // import CITIES from './cities.json'
-const GTOKEN = process.env.GOOGLEMAP_API;
 const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN; 
 
-export default function MarkerMap({mapSize, type}) {
+export default function MarkerMap({mapSize, mapData}) {
   const [popupInfo, setPopupInfo] = useState(null);
   // const [data , setData] = useState([])
+  const mapRef = useRef(null);
 
-  let data = ""
+  const data =  mapData && processData(mapData)
+console.log(data)
+ 
+  const onSelectCity = useCallback(({longitude, latitude},zoomlevel) => {
+    mapRef.current?.flyTo({center: [longitude, latitude], duration: 5000, zoom: zoomlevel});
+  }, []);
 
-  // console.log(markerDirection)
-  console.log(type)
-  if(type.type === "result")
+  markerService(onSelectCity,mapData,data)
+  
+  const handleCLick = () =>
   {
-  data  = type && type?.selected.map(item => 
-        {
-          let image = "" 
-          let url = "" 
-          if(item.photos)
-          {
-            const image = item?.photos[Math.floor(Math.random()*item?.photos?.length)].photo_reference
-            url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&maxheight=200&photoreference=
-          ${image}&key=${GTOKEN}`
-          }
-          const ob1 = {
-            "city": item.name,
-            "latitude": item.geometry.location.lat,
-            "longitude": item.geometry.location.lng,
-            "image": url
-        }
-          return ob1
-        })
-  }
-  else if(type.type === "select")
-  {
-    data = type && type?.result?.filter(item => item.place_id === type.selected).map(item => 
-      {
-        let image = "" 
-        let url = "" 
-        if(item.photos)
-        {
-          const image = item?.photos[Math.floor(Math.random()*item?.photos?.length)].photo_reference
-          url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&maxheight=200&photoreference=
-        ${image}&key=${GTOKEN}`
-        }
-        const ob1 = {
-          "city": item.placename,
-          "latitude": item.geometry.location.lat,
-          "longitude": item.geometry.location.lng,
-          "image": url
-      }
-      console.log(ob1)
-        return ob1
-      })
-  }
-  else if(type.type === "plannerview")
-  {
-    data = type?.selected?.map(item => 
-      {
-        const ob1 = {
-          "city": item.placename,
-          "latitude": item.locations[1],
-          "longitude": item.locations[0],
-          "image": "",
-          "plannerlocationitemsid": item.plannerlocationitemsid
-      }
-        return ob1
-      }).sort((a,b) => 
-      {
-        if(a.plannerlocationitemsid > b.plannerlocationitemsid)
-          {
-              return 1;
-          }
-          else if(a.plannerlocationitemsid < b.plannerlocationitemsid)
-          {
-              return -1;
-
-          }
-          else{
-              return 0;
-          }
-      })
-      console.log(data)
-  }
-  else if (type.type === "planoverview")
-  {
-    console.log(type.type)
-    data = type?.selected?.map(item => 
-      {
-        const ob1 = {
-          "city": item.placename,
-          "latitude": item.locations[1],
-          "longitude": item.locations[0],
-          "image": "",
-          "plannerlocationitemsid": item.plannerlocationitemsid
-      }
-        return ob1
-      }).sort((a,b) => 
-      {
-        if(a.plannerlocationitemsid > b.plannerlocationitemsid)
-          {
-              return 1;
-          }
-          else if(a.plannerlocationitemsid < b.plannerlocationitemsid)
-          {
-              return -1;
-
-          }
-          else{
-              return 0;
-          }
-      })
-      console.log(data)
+    console.log("test")
+    onSelectCity()
   }
 
-  if(type.type === "POST")
-  {
-    console.log(type.selected)
-    data = type?.selected?.data.map(item => 
-      {
-        const ob1 = {
-          "city": item.placename,
-          "latitude": item.locations[1],
-          "longitude": item.locations[0],
-      }
-        return ob1
-  })}
-       
+
   const pins = useMemo(
     () => data  && data?.map((city, index) => (
         <Marker
@@ -162,15 +63,16 @@ export default function MarkerMap({mapSize, type}) {
             setPopupInfo(city);
           }}
         >
-          <Pin index={index} type={type.type}/>
+          <Pin index={index} type={mapData.type}/>
         </Marker>
       )),
-    [data, type.type]
+    [data, mapData]
   );
-console.log(popupInfo)
+// console.log(popupInfo)
   return (
-    <div style={mapSize}>
+    <div style={mapSize} >
       <Map
+        ref={mapRef}
         initialViewState={{
           latitude: 50,
           longitude: -10,
@@ -187,7 +89,7 @@ console.log(popupInfo)
         <NavigationControl position="top-left" />
         <ScaleControl /> */}
 
-        {(type) && pins}
+        {(mapData) && pins}
   
 
         {popupInfo && (
@@ -195,6 +97,7 @@ console.log(popupInfo)
             anchor="top"
             longitude={Number(popupInfo.longitude)}
             latitude={Number(popupInfo.latitude)}
+            
             onClose={() => setPopupInfo(null)}
           >
                         {/* <img src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&maxheight=200&photoreference=${item.photo_reference}&key=${TOKEN}`}>
@@ -209,11 +112,10 @@ console.log(popupInfo)
               </a>
             </div>
             <img width="100%" src={popupInfo.image} />
-            
           </Popup>
         )}
       </Map>
-
+<div onClick={handleCLick}>test</div>
     </div>
   );
 }
