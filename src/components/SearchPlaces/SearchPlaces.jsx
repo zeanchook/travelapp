@@ -7,21 +7,17 @@ import { addLocationItem } from "../../utilities/planner-service";
 
 import LoadingPopup from "../LoadingPopup/LoadingPopup";
 
-import { reload , searchResult , markerDir} from "../../../atom";
+import { searchResult } from "../../../atom";
 import { useAtom } from "jotai";
 
 
-export default function SearchPlaces({plannerDetails})
+export default function SearchPlaces({plannerDetails, handleSelect, handleSearch})
 {
     const [searchState, setSearchState] = useState("");
     const [resultState, setResultState] = useAtom(searchResult);
     const [detailResult, setDetailResult] = useState({})
-    const [reloadState , setReloadState] = useAtom(reload);
     const [loadingSts ,setLoadingSts] = useState(false);
 
-    const [markerDirection , setmarkerDirection] = useAtom(markerDir)
-
-    
     console.log(resultState)
     const TOKEN = process.env.GOOGLEMAP_API;
 
@@ -41,7 +37,11 @@ export default function SearchPlaces({plannerDetails})
         const searchVeryDetai = await searchVeryDetail(searchState)
         // console.log(searchResults)
         // console.log(searchVeryDetai)
+        console.log(searchVeryDetai)
+
+        handleSearch({selected : searchVeryDetai , type: "result"});
         setResultState(searchVeryDetai)
+        // handleSearch(searchVeryDetai)
     }
 
     const handleChange = (e) =>
@@ -113,11 +113,11 @@ export default function SearchPlaces({plannerDetails})
 
     // console.log(resultState)
 
-    const handleMapDirection = e =>
+    const handleMapDirection = (e) =>
     {
         //to rotate to selected marker
         console.log(e.target.id);
-        setmarkerDirection({selected : e.target.id , type: "select"});
+        handleSelect({selected : e.target.id , type: "select", result: resultState});
     }
 
     const resultDisplay = resultState && resultState?.map((item,idx) => 
