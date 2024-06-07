@@ -122,8 +122,10 @@ const getDetails = async (req,res) => {
         const text = `SELECT name,date,title,startdate,enddate,locations,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
         JOIN planner ON users.id = planner.user_id
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
-        WHERE users.name=$1 AND planner_items.planner_id=$2`;
-        const values = [name,id];
+        WHERE planner_items.planner_id=$1`;
+        const values = [id];
+        // WHERE users.name=$1 AND planner_items.planner_id=$2`;
+        // const values = [name,id];
         const response = await pool.query(text,values);
         console.log("this is the response", response.rows)
         // console.log(response.rows.length)
@@ -160,8 +162,10 @@ const getEachDetails = async(req,res) =>
         JOIN planner ON users.id = planner.user_id
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
-        WHERE users.name=$1 AND planner_items.planner_id=$2`;
-        const values = [name,id];
+        WHERE planner_items.planner_id=$1`;
+        // WHERE users.name=$1 AND planner_items.planner_id=$2`;
+        // const values = [name,id];
+        const values = [id];
         const response = await pool.query(text,values);
         console.log("this is the response", response.rows)
         // console.log(response.rows.length)
@@ -232,7 +236,7 @@ const addtoItinerary = async (req,res) => {
     try
     {
         
-        const text = `INSERT INTO planner_location_items (planner_items_id,name,locations)  VALUES($1,$2,$3)`;
+        const text = `INSERT INTO planner_location_items (planner_items_id,placename,locations)  VALUES($1,$2,$3)`;
         const values = [parseInt(planner_items_id), name, locations];
         const response = await pool.query(text,values);
         console.log("this is the response", response.rows)
@@ -414,6 +418,66 @@ const patchDaysItinerary = async (req,res) => {
             };
 
 
+            const getUserPlannerStats = async (req,res) => {
+
+                const [ user ] = (req.body)
+                    const pool = new Pool({
+                        connectionString,
+                        });
+    
+                    
+                
+                    try
+                    {
+                        const text1 = `SELECT users.name, planner.title, planner.status 
+                        FROM users
+                        JOIN planner ON users.id = planner.user_id
+                        JOIN planner_items ON planner_items.planner_id = planner.plannerid
+                        JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
+                        WHERE users.name = $1`;
+                        
+                        const values1 = [user.name];
+        
+                        const response1 = await pool.query(text1,values1);
+                        console.log("this is the response", response1.rows)
+                        res.status(201).json(response1.rows);
+                   
+                    }
+                    catch(error)
+                    {
+                        // debug("error: %o", error);
+                        // console.log(error)
+                        // res.status(500).json( {error: error.detail} );
+                    }
+                };
+
+                const getAllPlannerStats = async (req,res) => {
+
+                        const pool = new Pool({
+                            connectionString,
+                            });
+                            
+                        try
+                        {
+                            const text1 = `SELECT *
+                            FROM users
+                            JOIN planner ON users.id = planner.user_id
+                            JOIN planner_items ON planner_items.planner_id = planner.plannerid
+                            JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id`;        
+                            const response1 = await pool.query(text1);
+                            console.log("this is the response", response1.rows)
+                            res.status(201).json(response1.rows);
+                       
+                        }
+                        catch(error)
+                        {
+                            // debug("error: %o", error);
+                            console.log(error)
+                            res.status(500).json( {error: error.detail} );
+                        }
+                    };
+
+
 
 
 const testing = async (req,res) => {
@@ -458,5 +522,7 @@ module.exports = {
     patchItinerary,
     patchDaysItinerary,
     deletePlanner,
-    patchPlanner
+    patchPlanner,
+    getUserPlannerStats,
+    getAllPlannerStats
 }
