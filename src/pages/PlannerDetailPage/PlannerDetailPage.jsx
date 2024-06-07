@@ -83,6 +83,7 @@ export default function PlannerDetailPage()
         }
 
           setPlannerItem(detailResults)
+          setmarkerDirection({selected : detailResults , type: "planoverview"})
           setLoadingSts(false)
         }
         getPlannerList(plannerId);
@@ -294,6 +295,12 @@ const Filtering = ({date}) => {
     }
 }
 
+    const handleOverview = (e) =>
+    {
+        e.preventDefault();
+        setmarkerDirection({selected : plannerItem , type: "planoverview"})
+    }
+
     const handleCurrentDay = (e,item) =>
     {
         e.preventDefault();
@@ -337,7 +344,7 @@ const Filtering = ({date}) => {
     {/* <div style={{display:"flex",flexDirection:"row",backgroundColor:"yellow"}}> */}
     
     <div style={{ width: '50%', overflowY: 'scroll', padding: "10px", display:"flex", flexDirection: "column"}}>
-    <h1 style={{fontSize:"25px", backgroundColor:"grey"}}
+    <h1 style={{fontSize:"25px", backgroundColor:"grey"}} onClick={handleOverview}
     >{plannerDetails && plannerDetails[0]?.title}</h1>
     <div>{plannerDetails &&          
        <List/>
@@ -350,7 +357,7 @@ const Filtering = ({date}) => {
         </div>
         <div style={{height:"50%",backgroundColor: 'yellow'}}> 
          {/* <HeatMap/> */}
-         <MarkerMap mapSize={{width: "50vw",height: "50vh"}} type={markerDirection}/>
+         <MarkerMap mapSize={{width: "100%",height: "100%"}} type={markerDirection}/>
          </div>
 
     </div>

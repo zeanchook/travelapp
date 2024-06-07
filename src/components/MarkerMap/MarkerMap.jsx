@@ -4,6 +4,7 @@ import {createRoot} from 'react-dom/client';
 import { searchResult } from '../../../atom';
 import { useAtomValue } from 'jotai';
 // import "../../components/MarkerMap/stylesheet.css"
+import { markerDir } from '../../../atom';
 
 
 // import {myVariable} from "./datatest"
@@ -16,7 +17,7 @@ import Map, {
   GeolocateControl
 } from 'react-map-gl';
 
-import { markerDir } from '../../../atom';
+
 // import ControlPanel from './control-panel';
 import Pin from './pin';
 
@@ -24,19 +25,17 @@ import Pin from './pin';
 const GTOKEN = process.env.GOOGLEMAP_API;
 const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN; 
 
-export default function MarkerMap() {
+export default function MarkerMap({mapSize, type}) {
   const [popupInfo, setPopupInfo] = useState(null);
   // const [data , setData] = useState([])
-  const searchValue = useAtomValue(searchResult)
-  const markerDirection = useAtomValue(markerDir)
 
   let data = ""
 
-  console.log(markerDirection)
-
-  if(markerDirection.type === "result")
+  // console.log(markerDirection)
+  console.log(type)
+  if(type.type === "result")
   {
-  data  = searchValue && searchValue?.map(item => 
+  data  = type && type?.selected.map(item => 
         {
           let image = "" 
           let url = "" 
@@ -55,9 +54,9 @@ export default function MarkerMap() {
           return ob1
         })
   }
-  else if(markerDirection.type === "select")
+  else if(type.type === "select")
   {
-    data = searchValue && searchValue?.filter(item => item.place_id === markerDirection.selected).map(item => 
+    data = type && type?.result?.filter(item => item.place_id === type.selected).map(item => 
       {
         let image = "" 
         let url = "" 
@@ -68,23 +67,23 @@ export default function MarkerMap() {
         ${image}&key=${GTOKEN}`
         }
         const ob1 = {
-          "city": item.name,
+          "city": item.placename,
           "latitude": item.geometry.location.lat,
           "longitude": item.geometry.location.lng,
           "image": url
       }
+      console.log(ob1)
         return ob1
       })
   }
-  else if(markerDirection.type === "plannerview")
+  else if(type.type === "plannerview")
   {
-    console.log(markerDirection)
-    data = markerDirection?.selected?.map(item => 
+    data = type?.selected?.map(item => 
       {
         const ob1 = {
-          "city": item.name,
-          "latitude": item.locations[0],
-          "longitude": item.locations[1],
+          "city": item.placename,
+          "latitude": item.locations[1],
+          "longitude": item.locations[0],
           "image": "",
           "plannerlocationitemsid": item.plannerlocationitemsid
       }
@@ -98,6 +97,7 @@ export default function MarkerMap() {
           else if(a.plannerlocationitemsid < b.plannerlocationitemsid)
           {
               return -1;
+
           }
           else{
               return 0;
@@ -105,8 +105,50 @@ export default function MarkerMap() {
       })
       console.log(data)
   }
-        
-       console.log(data)
+  else if (type.type === "planoverview")
+  {
+    console.log(type.type)
+    data = type?.selected?.map(item => 
+      {
+        const ob1 = {
+          "city": item.placename,
+          "latitude": item.locations[1],
+          "longitude": item.locations[0],
+          "image": "",
+          "plannerlocationitemsid": item.plannerlocationitemsid
+      }
+        return ob1
+      }).sort((a,b) => 
+      {
+        if(a.plannerlocationitemsid > b.plannerlocationitemsid)
+          {
+              return 1;
+          }
+          else if(a.plannerlocationitemsid < b.plannerlocationitemsid)
+          {
+              return -1;
+
+          }
+          else{
+              return 0;
+          }
+      })
+      console.log(data)
+  }
+
+  if(type.type === "POST")
+  {
+    console.log(type.selected)
+    data = type?.selected?.data.map(item => 
+      {
+        const ob1 = {
+          "city": item.placename,
+          "latitude": item.locations[1],
+          "longitude": item.locations[0],
+      }
+        return ob1
+  })}
+       
   const pins = useMemo(
     () => data  && data?.map((city, index) => (
         <Marker
@@ -116,23 +158,23 @@ export default function MarkerMap() {
           anchor="bottom"
           onClick={e => {
             e.originalEvent.stopPropagation();
-            console.log("monitor",city)
+            // console.log("monitor",city)
             setPopupInfo(city);
           }}
         >
-          <Pin index={index} type={markerDirection.type}/>
+          <Pin index={index} type={type.type}/>
         </Marker>
       )),
-    [data, markerDirection.type]
+    [data, type.type]
   );
 console.log(popupInfo)
   return (
-    <div style={{width: "50vw",height: "47vh"}}>
+    <div style={mapSize}>
       <Map
         initialViewState={{
           latitude: 50,
           longitude: -10,
-          zoom: 3.5,
+          zoom: 0,
           bearing: 0,
           pitch: 0
         }}
@@ -145,7 +187,7 @@ console.log(popupInfo)
         <NavigationControl position="top-left" />
         <ScaleControl /> */}
 
-        {(searchValue || data) && pins}
+        {(type) && pins}
   
 
         {popupInfo && (
