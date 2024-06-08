@@ -25,8 +25,8 @@ const create = async (req,res) => {
     try
     {
         const { name, email, password } = req.body;
-        const text = "INSERT INTO users (name, email, password) VALUES($1, $2, $3) RETURNING *";
-        const values = [name, email, await passHasher(password)];
+        const text = "INSERT INTO users (name, email, password, usertype) VALUES($1, $2, $3, $4) RETURNING *";
+        const values = [name, email, await passHasher(password), "stone"];
         const response = await pool.query(text, values);
         const token = createJWT(response.rows);
         res.status(201).json(token);
@@ -50,7 +50,7 @@ const login = async (req,res) => {
     {
         const { email, password } = req.body;
         console.log(email)
-        const text = "SELECT name,password,usertype FROM users WHERE email=$1";
+        const text = "SELECT id, name,password,usertype FROM users WHERE email=$1";
         const values = [email];
         const response = await pool.query(text, values);
         const responseResult = response.rows
@@ -112,7 +112,34 @@ const deleteUser = async (req,res) => {
         const response = await pool.query(text,values);
         const responseResult = response.rows
         console.log(responseResult)
-        // res.status(201).json(responseResult);
+        res.status(201).json(responseResult);
+       
+    }
+    catch(error)
+    {
+        debug("error: %o", error);
+        res.status(500).json( error.detail );
+    }
+};
+
+
+const updateUserLevel = async (req,res) => {
+    // debug("body: %o", req.body);
+    const pool = new Pool({
+        connectionString,
+        });
+    const { id , usertype } = req.body
+    try
+    {
+        
+        const text1 = `UPDATE users
+        SET usertype = $2 
+        WHERE id = $1`;
+        const values1 = [id , usertype];
+        const response = await pool.query(text1,values1);
+        const responseResult = response.rows
+        // console.log(responseResult)
+        res.status(201).json(responseResult);
        
     }
     catch(error)
@@ -166,5 +193,6 @@ const deleteUser = async (req,res) => {
     create,
     login,
     index,
-    deleteUser
+    deleteUser,
+    updateUserLevel
   };

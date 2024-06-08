@@ -9,15 +9,16 @@ export default function NavBar() {
     logOut();
     setUser(null);
   };
+  console.log(user)
 
   return (
-    <nav >
-      <NavLink to="/orders">Order History</NavLink>
+    <nav style={{backgroundColor:"grey"}}>
+      <NavLink to="/">Home</NavLink>
       &nbsp; | &nbsp;
-      <NavLink to="/orders/new">New Order</NavLink>
+      <NavLink to="/planner/">My Profile</NavLink>
       &nbsp;&nbsp;
       <Link to="" onClick={handleLogOut}>
-        Log Out
+        Log Out {user[0].name}
       </Link>
     </nav>
   );

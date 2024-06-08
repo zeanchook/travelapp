@@ -4,6 +4,7 @@ export const processData = (type) =>
     let data = ""
     if(type.type === "result")
     {
+    console.log(type)
     data  = type && type?.selected.map(item => 
           {
             let image = "" 
@@ -25,6 +26,7 @@ export const processData = (type) =>
     }
     else if(type.type === "select")
     {
+      console.log(type)
       data = type && type?.result?.filter(item => item.place_id === type.selected).map(item => 
         {
           let image = "" 
@@ -36,7 +38,7 @@ export const processData = (type) =>
           ${image}&key=${GTOKEN}`
           }
           const ob1 = {
-            "city": item.placename,
+            "city": item.name,
             "latitude": item.geometry.location.lat,
             "longitude": item.geometry.location.lng,
             "image": url
@@ -122,14 +124,16 @@ export const processData = (type) =>
 
 export const markerService = (onSelectCity,mapData,data) => 
 {
-    if(mapData && mapData.selected.length !== 0 )
+    if(mapData)
   {
     if(mapData.type === "select")
       {
+        
         const [ handle ] = data
-        onSelectCity(handle,10)
+        console.log("selected here",handle)
+        onSelectCity(handle,20)
       }
-    if(mapData.type === "plannerview")
+    else if(mapData.type === "plannerview" && mapData.selected.length !== 0)
     {
         const sumLatitudes = data.reduce((acc, current) => acc + current.latitude, 0);
         const sumLongitudes = data.reduce((acc, current) => acc + current.longitude, 0);
@@ -137,14 +141,17 @@ export const markerService = (onSelectCity,mapData,data) =>
         const averageLongitude = sumLongitudes / data.length;
         onSelectCity({longitude: averageLongitude, latitude: averageLatitude},15)
     }
-    console.log(mapData.type)
-    if(mapData.type === "planoverview")
+    else if (mapData.type === "plannerview" && mapData.selected.length === 0)
+    {
+      onSelectCity({longitude: -10, latitude: 50},0)
+    }
+    else if(mapData.type === "planoverview" && mapData.selected.length !== 0)
     {
         const sumLatitudes = data.reduce((acc, current) => acc + current.latitude, 0);
         const sumLongitudes = data.reduce((acc, current) => acc + current.longitude, 0);
         const averageLatitude = sumLatitudes / data.length;
         const averageLongitude = sumLongitudes / data.length;
-        onSelectCity({longitude: averageLongitude, latitude: averageLatitude},10)
+        onSelectCity({longitude: averageLongitude, latitude: averageLatitude},8)
     }
   } 
 }
