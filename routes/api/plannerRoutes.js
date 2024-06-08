@@ -29,6 +29,14 @@ router.delete("/delete/planner/:id",plannerController.deletePlanner);
 // patch/set a trip status => completed
 router.patch("/update/planner/:id",plannerController.patchPlanner);
 
+// for retrieving stats of heatmap stats and list of planner and views for ltr.
+router.patch("/getUserStats",plannerController.getUserPlannerStats);
+
+router.get("/getStats",plannerController.getAllPlannerStats);
+
+//delete itinerary item
+router.delete("/delete/itineraryitems/:id",plannerController.deleteItineraryItem);
+
 router.get("/testing",plannerController.testing);
 
 module.exports = router;

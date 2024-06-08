@@ -5,5 +5,9 @@ const myUserControl = require("../../controllers/api/myusersController");
 
 router.post("/signup", myUserControl.create);
 router.post("/login", myUserControl.login);
+router.get("/index", myUserControl.index);
+
+router.delete("/delete", myUserControl.deleteUser);
+router.patch("/updateUserLevel", myUserControl.updateUserLevel);
 
 module.exports = router;
