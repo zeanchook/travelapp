@@ -12,7 +12,7 @@ const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN; // Set your mapbox token here
 
 
 
-export default function HeatMap({selectedPlanner}) {
+export default function HeatMap({selectedPlanner, mapSize}) {
 console.log(myVariable)
 const [resultss,setResults] = useState("")
 console.log(selectedPlanner)
@@ -54,7 +54,7 @@ useEffect(() => {
 console.log(selectedPlanner)
   if(selectedPlanner)
   {
-    if(selectedPlanner.type === "selected")
+    if(selectedPlanner.type === "select")
     {
       console.log(selectedPlanner)
       getPlannerList(selectedPlanner.selected.plannerid)
@@ -69,12 +69,12 @@ console.log(selectedPlanner)
 }, [selectedPlanner]);
 
   return (
-    <div style={{width: "50vw",height: "50vh"}}>      
+    <div style={mapSize}>      
     <MapGL 
         initialViewState={{
           latitude: 40,
           longitude: -100,
-          zoom: 3
+          zoom: 0
         }}
         mapStyle="mapbox://styles/mapbox/dark-v9"
         mapboxAccessToken={MAPBOX_TOKEN}

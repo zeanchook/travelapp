@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { searchPlaces, searchDetail, searchVeryDetail } from "../../utilities/search-service";
 import dayjs from "dayjs";
 import { useRef } from "react";
@@ -48,10 +48,15 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
         // handleSearch(searchVeryDetai)
     }
 
-    const handleChange = (e) =>
-    {
-        setSearchState(e.target.value)
-    }
+    const handleChange = useCallback((event) => {
+        setSearchState(event.target.value);
+      }, [setSearchState]);
+
+    // const handleChange = (e) =>
+    // {
+    //     e.preventDefault();
+    //     setSearchState(e.target.value)
+    // }
 
     // console.log(resultState)
     // console.log("plannerDetails",plannerDetails)
@@ -177,7 +182,7 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
 
                 <div style={{display:"flex",backgroundColor:"grey",justifyContent:"center",alignItems:"center",}} key={idx}>
             <div style={{display:"flex",flex:"1",backgroundColor:"white",margin:"5px",borderRadius:"20px"}} >
-                <div className="collapse-title text-m font-small" style={{display:"flex"}}
+                <div className="collapse-title text-m font-small" style={{display:"flex",whiteSpace:"wrap"}}
                 id={item.place_id} onClick={handleMapDirection}
                 // onClick={handleDetails}
                 >
@@ -343,7 +348,7 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
                 strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
             </svg>
         </div>
-        <input type="search" onChange={handleChange} id="default-search" 
+        <input type="search" value={searchState} onChange={handleChange} id="default-search" 
         className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 
         rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 
         dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 

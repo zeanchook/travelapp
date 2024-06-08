@@ -22,8 +22,8 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
             const { plannerid } = item;
             const newPlannerList = plannerList.filter((planner) => planner.plannerid!== plannerid);
             setPlannerList(newPlannerList)
-            // const response = await deletePlanner(plannerid);
-            // console.log(response)
+            const response = await deletePlanner(plannerid);
+            console.log(response)
         }
         
     }
@@ -74,6 +74,9 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
                             {setheatMapDisplay(true)
                             setselectedPlanner({selected : item , type: "select"})}
                             }>Heat Map</button>
+                            <button className="btn btn-error"
+                            onClick={(e) => handleDelete(e,item)}
+                            >Delete</button>
                             {item.status === "Completed" ? <button className="btn btn-secondary"
                             onClick={(e) => handleStatus(e,item)}
                             >Completed</button> : 
@@ -81,9 +84,6 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
                             onClick={(e) => handleStatus(e,item)}
                             >Not Yet?</button>
                             }
-                            <button className="btn btn-error"
-                            onClick={(e) => handleDelete(e,item)}
-                            >Delete</button>
                             </td>                               
                     </tr>)
         })
