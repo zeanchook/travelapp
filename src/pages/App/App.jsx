@@ -5,6 +5,7 @@ import NavBar from "../../components/NavBar/NavBar";
 import { getUser } from "../../utilities/users-service";
 import AuthPage from "../AuthPage/AuthPage";
 import { Navigate } from "react-router-dom";
+import Community from "../Community/Community"
 
 import PlannerPage from "../PlannerPage/PlannerPage";
 import MapPage from "../../components/MapPage/HeatMap"
@@ -16,6 +17,8 @@ import { useAtomValue } from "jotai";
 import UserProfilePage from "../UserProfilePage/UserProfilePage";
 
 import NewPage from "../NewPage";
+import UserProfilePage2 from "../UserProfilePage2/UserProfilePage2";
+import AdminPage from "../AdminPage/AdminPage";
 
 const log = debug("mern:pages:App:App");
 
@@ -33,18 +36,21 @@ function App() {
   }
   console.log(user)
   return (
-    <div >
+    <div>
       <NavBar />
       {/* <div > */}
         
         
         <Routes>
           <Route path="/userprofile" element={<UserProfilePage/>}/>
+          <Route path="/userprofile2" element={<UserProfilePage2/>}/>
           <Route path="/planner" element={<PlannerPage/>}/>
           <Route path="/planner/:plannerId" element={<PlannerDetailPage/>}/>
           <Route path="/map" element={<MapPage/>}/>
           <Route path="/new" element={<NewPage/>}/>
           <Route path="*" element={<Navigate to="/"  />} />
+          <Route path="/admin" element={<AdminPage/>}/>
+          <Route path="/" element={<Community/>}/>
           {/* <Route path="/useredit" element={<OrderHistoryPage />} />
           <Route path="/orders/new" element={<NewOrderPage />} />
 

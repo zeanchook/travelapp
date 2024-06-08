@@ -1,7 +1,7 @@
 import SearchPlaces from "../../components/SearchPlaces/SearchPlaces"
 import HeatMap from "../../components/MapPage/HeatMap"
 // import { useState } from "react"
-import { createPlanner, getPlanner, getStats } from "../../utilities/planner-service"
+import { createPlanner, getPlanner, getUserStats } from "../../utilities/planner-service"
 import { useEffect, useState } from "react"
 import TableResults from "../../components/TableResults/TableResults"
 import { ToastContainer, toast } from 'react-toastify';
@@ -97,7 +97,7 @@ export default function PlannerPage()
     useEffect(() => {
      async function getAllDetails(name)
      {
-              const response = await getStats(name)
+              const response = await getUserStats(name)
               console.log(response)
               
               let titleCount = 0;
@@ -147,8 +147,8 @@ export default function PlannerPage()
     console.log(plannerList)
     
 
-    return(<div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{ width: '50%', overflowY: 'scroll', marginBottom: "300px", display:"flex", flexDirection: "column", justifyContent:"center"}}>
+    return(<div style={{ display: 'flex', height: '100vh'}}>
+      <div style={{ width: '40%', overflowY: 'scroll', marginBottom: "300px", display:"flex", flexDirection: "column", justifyContent:"center"}}>
           <UserCard 
           currentUser={currentUser} 
           userStats={userStats} 
@@ -157,8 +157,17 @@ export default function PlannerPage()
           handleGetPlanner={handleGetPlanner}
           />
         </div>
-        <div style={{ width: '50%', overflowY: 'scroll', marginRight: "100px", marginBottom: "200px", display:"flex", flexDirection: "column",justifyContent:"center"}}>
-        
+
+        <div style={{ width: '60%',}}>
+
+        <div style={{height:"40%", backgroundColor: "yellow", 
+        justifyContent:'center', 
+        display:"flex", alignItems:"center"}}> 
+        <HeatMap mapSize={{width: "35vw",height: "35vh",borderRadius:"10px"}}/>
+        </div>
+
+
+        <div style={{height:"60%", backgroundColor: "grey", justifyContent:'center', display:"flex", overflowY: 'scroll'}}> 
         {newForm &&
         <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
         <div className="mb-5">
@@ -198,10 +207,12 @@ export default function PlannerPage()
 
         {(heatMap && !myheatMap) && <HeatMap selectedPlanner={selectedPlanner}/>}
 
-        {myheatMap &&  <HeatMap selectedPlanner={selectedPlanner}/>}
+        {myheatMap &&  <HeatMap selectedPlanner={selectedPlanner} mapSize={{width: "50vw",height: "50vh"}}/>}
   
         </div>
         </div>
+        </div>
+        
         )
     
 }
