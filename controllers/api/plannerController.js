@@ -119,7 +119,7 @@ const getDetails = async (req,res) => {
     try
     {
         
-        const text = `SELECT name,date,title,startdate,enddate,locations,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
+        const text = `SELECT id,name,date,title,startdate,enddate,locations,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
         JOIN planner ON users.id = planner.user_id
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         WHERE planner_items.planner_id=$1`;
@@ -478,6 +478,35 @@ const patchDaysItinerary = async (req,res) => {
                     };
 
 
+                    
+        
+const deleteItineraryItem = async (req,res) => {
+
+        const { id } = req.params
+        console.log(id)
+        const pool = new Pool({
+            connectionString,
+            });
+            
+        try
+        {
+            const text1 = `DELETE FROM planner_location_items
+            WHERE plannerlocationitemsid = $1`;
+            const values1 = [id];     
+            const response1 = await pool.query(text1,values1);
+            console.log("this is the response", response1.rows)
+            res.status(201).json(response1.rows);
+        
+        }
+        catch(error)
+        {
+            // debug("error: %o", error);
+            console.log(error)
+            res.status(500).json( {error: error.detail} );
+        }
+    };
+
+
 
 
 const testing = async (req,res) => {
@@ -524,5 +553,6 @@ module.exports = {
     deletePlanner,
     patchPlanner,
     getUserPlannerStats,
-    getAllPlannerStats
+    getAllPlannerStats,
+    deleteItineraryItem
 }
