@@ -76,3 +76,11 @@ export const deleteUsers = async(item) =>
     const response = await sendRequest(url,"DELETE",item)
     return response;         
 }
+
+export const updateUserLevel = async(item) =>
+{
+    const url = `/api/myusers/updateUserLevel`
+    console.log(item)
+    const response = await sendRequest(url,"PATCH",item)
+    return response;         
+}

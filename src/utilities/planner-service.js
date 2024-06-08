@@ -65,3 +65,24 @@ export const patchPlannerStatus = async(id,body) =>
     const response = await sendRequest(url,"PATCH",body)
     return response; 
 }
+
+export const getUserStats = async(item) =>
+{
+    const url = `/api/planner/getUserStats`
+    const response = await sendRequest(url,"PATCH",item)
+    return response; 
+}
+
+export const getStats = async() =>
+{
+    const url = `/api/planner/getStats`
+    const response = await sendRequest(url,"GET")
+    return response; 
+}
+
+export const deleteItineraryItem = async(id) =>
+{
+    const url = `/api/planner/delete/itineraryitems/${id}`
+    const response = await sendRequest(url,"DELETE")
+    return response; 
+}
