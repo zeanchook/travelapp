@@ -2,9 +2,13 @@ import * as React from 'react';
 import {useState, useMemo, useEffect} from 'react';
 import {createRoot} from 'react-dom/client';
 import { searchResult } from '../../../atom';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 // import "../../components/MarkerMap/stylesheet.css"
+// import "./stylesheet.css"
 import { markerDir } from '../../../atom';
+import { loginSts, tiers } from '../../../atom';
+import ControlPanel from './ControlPanel';
+
 
 // import {MapRef} from 'react-map-gl';
 
@@ -20,6 +24,7 @@ import Map, {
 
 // import { MapRef } from 'react-map-gl/dist/esm/mapbox/create-ref';
 
+
 // import ControlPanel from './control-panel';
 import Pin from './pin';
 import { markerService, processData } from './markermap-service';
@@ -31,23 +36,35 @@ const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN;
 
 export default function MarkerMap({mapSize, mapData}) {
   const [popupInfo, setPopupInfo] = useState(null);
+
+  const [currentUser] = useAtomValue(loginSts)
+  const tier = useAtomValue(tiers)
+  console.log(tier)
+
+  const usertype = currentUser?.usertype
+  console.log(usertype)
+
+  const findindex = tier.findIndex(item => item.name === usertype)
+  console.log(findindex)
+console.log(tier[findindex])
+
+const [mapStyle, setMapStyle] = useState("")
+
   // const [data , setData] = useState([])
   const mapRef = useRef(null);
 
+  console.log(mapData)
   const data =  mapData && processData(mapData)
-console.log(data)
- 
+
   const onSelectCity = useCallback(({longitude, latitude},zoomlevel) => {
     mapRef.current?.flyTo({center: [longitude, latitude], duration: 5000, zoom: zoomlevel});
   }, []);
 
   markerService(onSelectCity,mapData,data)
   
-  const handleCLick = () =>
-  {
-    console.log("test")
-    onSelectCity()
-  }
+  // const togglePopup = useCallback(() => {
+  //   markerRef.current?.togglePopup();
+  // }, []);
 
 
   const pins = useMemo(
@@ -80,7 +97,7 @@ console.log(data)
           bearing: 0,
           pitch: 0
         }}
-        mapStyle="mapbox://styles/mapbox/dark-v9"
+        mapStyle={mapStyle}
         mapboxAccessToken={MAPBOX_TOKEN}
         // style={{width: "50vw",height: "500vh"}}
       >
@@ -88,6 +105,7 @@ console.log(data)
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" />
         <ScaleControl /> */}
+        
 
         {(mapData) && pins}
   
@@ -97,25 +115,21 @@ console.log(data)
             anchor="top"
             longitude={Number(popupInfo.longitude)}
             latitude={Number(popupInfo.latitude)}
-            
             onClose={() => setPopupInfo(null)}
           >
                         {/* <img src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&maxheight=200&photoreference=${item.photo_reference}&key=${TOKEN}`}>
                         </img> */}
-            <div>
-              {popupInfo.city}, {popupInfo.city} |{' '}
-              <a
-                target="_new"
-                href={`http://en.wikipedia.org/w/index.php?title=Special:Search&search=${popupInfo.city}, ${popupInfo.state}`}
-              >
-                Wikipedia
-              </a>
+            <div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center'}}>
+            <div >
+              {popupInfo.city}
             </div>
-            <img width="100%" src={popupInfo.image} />
+            <img width="50%" src={popupInfo.image} />
+            </div>
           </Popup>
         )}
+        <ControlPanel tiers={tier[findindex]} setMapStyle={setMapStyle}/>
       </Map>
-<div onClick={handleCLick}>test</div>
+      
     </div>
   );
 }

@@ -10,20 +10,29 @@ const pinStyle = {
   stroke: 'none'
 };
 
+const selection = {
+  select: {cursor: 'pointer', fill: '#5171d1', stroke: 'none'},
+  result: {cursor: 'pointer', fill: '#00dd51', stroke: 'none'},
+  plannerview: {cursor: 'pointer', fill: '#d00', stroke: 'none'},
+  POST: {cursor: 'pointer', fill: '#d00', stroke: 'none'},
+  planoverview: {cursor: 'pointer', fill: '#d00', stroke: 'none'}
+
+}
+
 const textStyle = {
-  fontSize: 14,
+  fontSize: 11,
   fontWeight: 'bold',
   fill: '#fff',
   textAlign: 'center',
 };
 
 
+
 function Pin({size = 25, index, type}) {
-  console.log(index)
   return (
-    <svg height={size} viewBox="0 0 24 24" style={pinStyle}>
+    <svg height={size} viewBox="0 0 24 24" style={selection[type]}>
       <path d={ICON} />
-      {type !== "select" && <text x="9" y="14" style={textStyle}>{index + 1}</text>}
+      {(type !== "select") && <text x="9" y="14" style={textStyle}>{index + 1}</text>}
     </svg>
   );
 }
