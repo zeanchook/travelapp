@@ -9,19 +9,23 @@ import LoadingPopup from "../LoadingPopup/LoadingPopup";
 
 import { searchResult } from "../../../atom";
 import { useAtom } from "jotai";
+import { reload } from "../../../atom";
 
-
-export default function SearchPlaces({plannerDetails, handleSelect, handleSearch})
+export default function SearchPlaces({plannerDetails, handleSelect, handleSearch, validate})
 {
     const [searchState, setSearchState] = useState("");
     const [resultState, setResultState] = useAtom(searchResult);
     const [detailResult, setDetailResult] = useState({})
     const [loadingSts ,setLoadingSts] = useState(false);
+    const GTOKEN = process.env.GOOGLEMAP_API;
+
+    console.log(plannerDetails)
 
     console.log(resultState)
     const TOKEN = process.env.GOOGLEMAP_API;
 
     const [isOpen, setIsOpen] = useState(false);
+    const [reloadState , setReloadState] = useAtom(reload);
 
     const [popupContent, setpopupContent] = useState("");
 
@@ -81,6 +85,9 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
 
     const handleClick = (e) =>
     {   
+        e.preventDefault();
+        console.log(e.target.getAttribute("id"))
+        console.log(e.target.id)
         setIsOpen(true)
         const findIndex = resultState.findIndex(item => item.place_id === e.target.id)
         console.log("monitor",resultState[findIndex])
@@ -89,8 +96,30 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
 
     const DetailSelectedResult = () =>
         {
+
+            const Rating = () => {
+                let obj = []
+                for(let i = 0 ; i < 5 ; i++)
+                {
+                    if(selectedResult.rating - i > 1)
+                    obj.push(<svg className="w-4 h-4 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+    </svg>)
+    else{
+        obj.push( <svg className="w-4 h-4 text-gray-300 me-1 dark:text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+    </svg>)
+    }
+                }
+                return obj
+            }
+            
             return(<>
-            {selectedResult.name}
+            {selectedResult.name}{selectedResult.rating && <div style={{display:"flex",margin:"12px"}}><Rating/>
+            <p className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">{selectedResult.rating}</p>
+    <p className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">out of</p>
+    <p className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">5</p>
+            </div>}
             {/* {selectedResult?.types?.map(item=><>{item}</>)} */}
             <div className="carousel carousel-center rounded-box">
                 {selectedResult?.photos?.map((item,idx) => <div key={idx} className="carousel-item">
@@ -122,9 +151,33 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
 
     const resultDisplay = resultState && resultState?.map((item,idx) => 
         {
-            return(<div style={{display:"flex",backgroundColor:"grey"}} key={idx}>
-            <div style={{display:"flex",flex:"1",backgroundColor:"white",margin:"10px"}} >
-                <div className="collapse-title text-l font-small" style={{display:"flex"}}
+            console.log(item.rating)
+            const Rating = () => {
+                let obj = []
+                for(let i = 0 ; i < 5 ; i++)
+                {
+                    if(item.rating - i > 1)
+                    obj.push(<svg className="w-4 h-4 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+    </svg>)
+    else{
+        obj.push( <svg className="w-4 h-4 text-gray-300 me-1 dark:text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+    </svg>)
+    }
+                }
+                return obj
+            }
+
+        //     const image = item?.photos[Math.floor(Math.random()*item?.photos?.length)].photo_reference
+        //     const url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&maxheight=200&photoreference=
+        //   ${image}&key=${GTOKEN}`
+    
+            return(
+
+                <div style={{display:"flex",backgroundColor:"grey",justifyContent:"center",alignItems:"center",}} key={idx}>
+            <div style={{display:"flex",flex:"1",backgroundColor:"white",margin:"5px",borderRadius:"20px"}} >
+                <div className="collapse-title text-m font-small" style={{display:"flex"}}
                 id={item.place_id} onClick={handleMapDirection}
                 // onClick={handleDetails}
                 >
@@ -134,7 +187,20 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
                 </div>
                 {/* <div className="collapse-content">  */}
                     <div>{Object.keys(detailResult).length !== 0  && (detailResult[item.place_id]?.formatted_address)}</div>
-                    <div>⭐ {Object.keys(detailResult).length !== 0  && (detailResult[item.place_id]?.rating)}</div>
+                    {item.rating && 
+                    // <div>⭐ {Object.keys(detailResult).length !== 0  && (detailResult[item.place_id]?.rating)}</div>
+                    <div className="flex items-center">
+    {/* <svg class="w-4 h-4 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+    </svg> */}
+    <div style={{display:"flex",margin:'20px'}}><Rating/></div>
+    {/* <svg class="w-4 h-4 text-gray-300 me-1 dark:text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+    </svg> */}
+</div>
+                    
+                    
+                    }
                 {/* </div> */}
                 
             </div>
@@ -143,7 +209,24 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
             text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 
             dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700" 
             id={item.place_id} onClick={handleClick}>Add</button>}
-            </div>)
+            </div>
+
+            
+         
+
+    
+            
+           
+            
+            
+            
+            
+            
+         
+
+
+
+            )
             // console.log(item)
         })
 
@@ -183,17 +266,23 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
         <div id='ModelContainer'
         className='fixed inset-0 bg-black flex justify-center items-center bg-opacity-20 backdrop-blur-sm' style={{zIndex:"1"}}>
         <div 
-            className='p-2 bg-white w-10/12 md:w-1/2 lg:1/3 shadow-inner border-e-emerald-600 rounded-lg py-5'>
+            className='p-2 bg-white w-10/12 md:w-1/2 lg:1/3 shadow-inner border-e-emerald-600 rounded-lg py-5'
+            >
+                <button style={{float:"right",margin:"10px"}} onClick={handlelosePopUp}>❌</button>
             <div
-            className='w-full p-3 justify-center items-center'>
-            <h2
-                className='font-semibold py-3 text-center text-xl'>
+            className='w-full p-3 justify-center items-center' 
+            >
+            <div
+                className='font-semibold py-3 text-center text-xl' 
+                style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",margin:"30px"}}>
                 {selectedResult && <DetailSelectedResult/>}
-                Which day would you like to add to?
+                <p style={{margin:"30px"}}>Which day would you like to add to?</p>
+                <div style={{display:'flex',flexDirection:"row", margin:"10px"}}>
                 <OptionSelection/>
-                <button onClick={handleAddToItinerary}>Add to Itinerary</button>
-                <button onClick={handlelosePopUp}>Close Popup</button>
-            </h2>
+                <button className="=btn btn-success" onClick={handleAddToItinerary} style={{margin:"10px"}}>Add to Itinerary</button>
+                </div>
+                
+            </div>
             
             </div>
         </div>
@@ -209,7 +298,7 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
   }
 
   
-  const ListOptions = () => plannerDetails?.map((item,idx) =>
+  const ListOptions = () => plannerDetails && plannerDetails?.map((item,idx) =>
   {
       // <option key={idx}>{dayjs(item.date).format("DD-MM-YYYY")}</option>
       return(<option key={idx} value={parseInt(item.planner_items_id)}>{dayjs(item.date).format("DD-MM-YYYY")}</option>)
@@ -218,22 +307,22 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
   const OptionSelection = () =>
   {
     return(<form><label className="form-control w-full max-w-xs">
-    <div className="label">
-        <span className="label-text">Pick the best fantasy franchise</span>
+    {/* <div className="label">
+        <span className="label-text">Select</span>
         <span className="label-text-alt">Alt label</span>
-    </div>
+    </div> */}
 
     <select className="select select-bordered" onChange={handleChangeOption} value={selectedDay}>
-        <option disabled selected value="0">Pick one</option>
+        <option disabled selected value="0">Select a date</option>
         <ListOptions/>
     </select>
 
     {/* </label> */}
 
-    <div className="label">
+    {/* <div className="label">
         <span className="label-text-alt">Alt label</span>
         <span className="label-text-alt">Alt label</span>
-    </div>
+    </div> */}
     </label>
 
     </form>)
@@ -269,7 +358,11 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
     </div>
     </form>
 
+    <ul style={{whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'}}>
     {resultState && resultDisplay}
+    </ul>
 
     
  
