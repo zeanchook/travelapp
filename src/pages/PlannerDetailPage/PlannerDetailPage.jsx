@@ -38,7 +38,7 @@ export default function PlannerDetailPage()
     const [plannerDetails, setPlannerDetails] = useState("")
     const [plannerItem, setPlannerItem] = useState("")
 
-    const [draggable, setDraggable ] = useState(false)
+    const [validate, setValidate ] = useState(false)
 
     const [ user ] = useAtomValue(loginSts)
     console.log(user)
@@ -75,11 +75,11 @@ export default function PlannerDetailPage()
 
         if(plannerUser.id === user.id)
         {
-            setDraggable(true);
+            setValidate(true);
         }
         else
         {
-            setDraggable(false);
+            setValidate(false);
         }
 
           setPlannerItem(detailResults)
@@ -119,11 +119,7 @@ const handleDrop = async(e,item) =>
         setPlannerItem(updatedState)
 
         const filtering = updatedState.filter(item => item.date === markerDirection.date)
-        console.log(filtering)
-        console.log(updatedState,markerDirection)
-
         const markerupdatedState = produce(markerDirection, (draft) => {
-            
            draft.selected = filtering
           });
         setmarkerDirection(markerupdatedState)
@@ -150,7 +146,6 @@ const handleDragLeave = (e) =>
 
 const handleDropDay = async(e,item) =>
 {
-
     e.preventDefault();
     e.stopPropagation();
    console.log(dragItem,item)
@@ -197,6 +192,10 @@ const handleDelete = async (e,selectedItem) =>
     const deleted = plannerItem.filter(item => (item.plannerlocationitemsid !== plannerlocationitemsid))
     setPlannerItem(deleted);
 
+    const updatedState = produce(markerDirection, (draft) => {
+        draft.selected = deleted;
+      });
+    setmarkerDirection(updatedState);
     const response = await deleteItineraryItem(plannerlocationitemsid)
     console.log(response)
 
@@ -208,11 +207,18 @@ const handleDropNoItem = async(e,item) =>
     e.stopPropagation();
    
     console.log("handleDropNoItem",dragItem,item)
+    const finder = plannerDetails.findIndex(items => items.date === item)
+    console.log(finder)
+    console.log(plannerDetails[finder].planner_items_id)
     const data = {
         A_PlannerItemID:dragItem.planner_items_id,
         A_PlannerLocID:dragItem.plannerlocationitemsid,
+        B_PlannerItemID:plannerDetails[finder].planner_items_id
     }
-   
+
+    console.log(plannerDetails)
+
+
     const currentDragItem = plannerItem.findIndex(x=>x.plannerlocationitemsid === data.A_PlannerLocID)
     console.log("handleDropNoItem",plannerItem[currentDragItem],currentDragItem)
     // console.log(currentDragItem)
@@ -228,6 +234,8 @@ const handleDropNoItem = async(e,item) =>
       console.log("handleDropNoItem")
       setPlannerItem(updatedState2);
       console.log(updatedState2 === plannerItem)
+      const resposne = await patchItinneraryItem(data)
+      console.log(resposne)
     
 }
 
@@ -254,7 +262,7 @@ const Filtering = ({date}) => {
      
       <li className="mb-10 ms-4 " key={idx} style={{backgroundColor:"", display:"flex", justifyContent:"space-between"}}>
            <div style={{display:"flex",alignItems:"center"}}
-            draggable={draggable} value={item}
+            draggable={validate} value={item}
             onDragStart={(e)=> handleDrag(e,item)} 
             onDrop={(e)=>{handleDrop(e,item)}} 
             onDragOver={handleDragOver}
@@ -270,7 +278,7 @@ const Filtering = ({date}) => {
              
       <div style={{margin:"5px"}}
       key={idx}>{item.placename}</div></div>
-      <button onClick={(e) => handleDelete(e,item)}>🗑️</button>
+      {validate && <button onClick={(e) => handleDelete(e,item)}>🗑️</button>}
       </li>
       );
     } 
@@ -278,15 +286,12 @@ const Filtering = ({date}) => {
     else {
         return (
             <div 
-            
             onDrop={(e)=>handleDropNoItem(e,date, "dropnoitem")} 
-        onDragOver={handleDragOver}
-        style={{backgroundColor:"green",padding:"20px"}}
-        >
+            onDragOver={handleDragOver}
+            style={{backgroundColor:"green",padding:"20px"}}>
         <li className="mb-10 ms-4" >
         <div className="absolute w-3 h-3 bg-orange-200 rounded-full 
-        mt-1.5 -start-1.5 border border-white dark:border-black-900 dark:bg-black-700" 
-        
+        mt-1.5 -start-1.5 border border-white dark:border-black-900 dark:bg-black-700"
         ></div>
         <div>No items here yet </div>
         </li>
@@ -294,6 +299,70 @@ const Filtering = ({date}) => {
         );
     }
 }
+
+// const Filtering = ({date}) => {
+//     let filteredItems = plannerItem  && plannerItem?.filter(item => item.date === date).sort((a,b) => 
+//     {
+//     if(a.plannerlocationitemsid > b.plannerlocationitemsid)
+//         {
+//             return 1;
+//         }
+//         else if(a.plannerlocationitemsid < b.plannerlocationitemsid)
+//         {
+//             return -1;
+//         }
+//         else{
+//             return 0;
+//         }
+//     }
+//     );
+//     // console.log("handleDropNoItem re-render")
+//     if (filteredItems && filteredItems.length > 0) {
+//         // console.log("here?",filteredItems)
+//       return filteredItems?.map((item,idx) => 
+     
+//       <li className="mb-10 ms-4 " key={idx} style={{backgroundColor:"", display:"flex", justifyContent:"space-between"}}>
+//            <div style={{display:"flex",alignItems:"center"}}
+//             draggable={validate} value={item}
+//             onDragStart={(e)=> handleDrag(e,item)} 
+//             onDrop={(e)=>{handleDrop(e,item)}} 
+//             onDragOver={handleDragOver}
+//             onDragLeave={handleDragLeave}
+//             >
+//            <div>
+//             <svg className="" height={30} viewBox="0 0 24 24" style={pinStyle}>
+//                 <path d={ICON} />
+//                 <text x="7.5" y="15" style={textStyle}>{idx + 1}</text>
+//             </svg>
+            
+//             </div>
+             
+//       <div style={{margin:"5px"}}
+//       key={idx}>{item.placename}</div></div>
+//       {validate && <button onClick={(e) => handleDelete(e,item)}>🗑️</button>}
+//       </li>
+//       );
+//     } 
+    
+//     else {
+//         return (
+//             <div 
+            
+//             onDrop={(e)=>handleDropNoItem(e,date, "dropnoitem")} 
+//         onDragOver={handleDragOver}
+//         style={{backgroundColor:"green",padding:"20px"}}
+//         >
+//         <li className="mb-10 ms-4" >
+//         <div className="absolute w-3 h-3 bg-orange-200 rounded-full 
+//         mt-1.5 -start-1.5 border border-white dark:border-black-900 dark:bg-black-700" 
+        
+//         ></div>
+//         <div>No items here yet </div>
+//         </li>
+//         </div>
+//         );
+//     }
+// }
 
     const handleOverview = (e) =>
     {
@@ -335,6 +404,7 @@ const Filtering = ({date}) => {
             </p>
                 <ol className="relative" >                  
                    {Filtering && <Filtering date={item.date}/>}
+                   {/* {Filtering && <Filtering date={item.date}/>} */}
                 </ol>
             </div>)
         })
@@ -352,16 +422,18 @@ const Filtering = ({date}) => {
     </div>
 
     <div style={{ width: '50%'}}>        
-        <div style={{height:"50%",backgroundColor: 'grey',overflowY: 'scroll'}}>
-        <SearchPlaces plannerDetails={plannerDetails} handleSelect={handleSelect} handleSearch={handleSearch}/>
+        <div style={{height:"47.5%",backgroundColor: 'grey',overflowY: 'scroll', display:"flex", flexDirection:"column",alignItems:"center"}}>
+        <SearchPlaces plannerDetails={plannerDetails} 
+        handleSelect={handleSelect} 
+        handleSearch={handleSearch}
+        validate={validate}/>
         </div>
         <div style={{height:"50%",backgroundColor: 'yellow'}}> 
-         {/* <HeatMap/> */}
-         <MarkerMap mapSize={{width: "100%",height: "100%"}} type={markerDirection}/>
+         <MarkerMap mapSize={{width: "100%",height: "100%"}} mapData={markerDirection}/>
          </div>
 
     </div>
-    {/* {loadingSts && <LoadingPopup />} */}
+    {loadingSts && <LoadingPopup />}
     </div>)
 }
 
