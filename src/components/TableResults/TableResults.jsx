@@ -106,7 +106,7 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
         
         return(<div style={{margin:"10px",padding:"10px",backgroundColor:"white"}} key={idx}>
             <div style={{padding:"20px"}}>
-            <img src={url} style={{height: "20vh", width: "30vh"}}
+            <img src={url} style={{height: "20vh", width: "30vh",borderRadius:"20px"}}
             /></div>
 
             <div style={{display:'flex',flexDirection:'row',justifyContent:"space-between",
@@ -134,7 +134,8 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
 
             {/* <div >{dayjs(item.created_at).format("DD MMM")}</div> */}
             <div style={{display:'flex',color:"grey"}}>
-            <div >{dayjs(item.startdate).format("DD MMM")+" - "+dayjs(item.enddate).format("DD MMM YY")+" • "+parseInt(item.dayslength)+" days"}</div>
+            <div >{dayjs(item.startdate).format("DD MMM")+" - "+dayjs(item.enddate).format("DD MMM YY")+
+            " • "+parseInt(item.dayslength)+" days"+" • "+item.ref_count+" places "}</div>
             {/* <div >{item.created_at}</div> */}
             {/* <div >{parseInt(item.dayslength)} days</div> */}
             </div>
