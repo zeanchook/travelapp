@@ -11,7 +11,7 @@ import { searchResult } from "../../../atom";
 import { useAtom } from "jotai";
 import { reload } from "../../../atom";
 
-export default function SearchPlaces({plannerDetails, handleSelect, handleSearch, validate})
+export default function SearchPlaces({plannerDetails, handleSelect, handleSearch, validate, plannerId})
 {
     const [searchState, setSearchState] = useState("");
     const [resultState, setResultState] = useAtom(searchResult);
@@ -20,6 +20,7 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
     const GTOKEN = process.env.GOOGLEMAP_API;
 
     console.log(plannerDetails)
+    console.log(plannerId)
 
     console.log(resultState)
     const TOKEN = process.env.GOOGLEMAP_API;
@@ -251,8 +252,25 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
             setLoadingSts(true)
             const { geometry } = selectedResult;
             console.log(geometry.location)
+            console.log(selectedResult)
 
-            const data = {planner_items_id:selectedDay,name: selectedResult.name, locations: [geometry.location.lng,geometry.location.lat]}
+            let coverPhoto = ""
+            if(selectedResult?.photos.length !== 0)
+            {
+                const filtering = selectedResult.photos.filter(item => 
+                    {
+                    if(item.width > item.height)
+                    {
+                        coverPhoto = item.photo_reference;
+                    }
+                }
+                    )
+                console.log(filtering)
+            }
+
+            const data = {planner_items_id:selectedDay,name: selectedResult.name, locations: [geometry.location.lng,geometry.location.lat],
+                plannerId:plannerId, coverphoto: coverPhoto
+            }
             console.log(data)
 
             const response = await addLocationItem(selectedDay,data)

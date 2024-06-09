@@ -219,14 +219,14 @@ const addtoItinerary = async (req,res) => {
     console.log("passes thru")
     const { planneritemsid } = req.params
     console.log("here,",planneritemsid)
-    const { planner_items_id, name, locations} = req.body
-    console.log(planner_items_id, name, locations)
-    console.log(typeof(name))
+    const { planner_items_id, name, locations, plannerId, coverphoto} = req.body
+    console.log(coverphoto)
+    
     // console.log(req.body)
     const pool = new Pool({
         connectionString,
         });
-
+console.log(plannerId)
     // const currentUser = getUser(req, res);
     // const [ user ] = currentUser
     // const { name } = user
@@ -236,12 +236,34 @@ const addtoItinerary = async (req,res) => {
     try
     {
         
-        const text = `INSERT INTO planner_location_items (planner_items_id,placename,locations)  VALUES($1,$2,$3)`;
-        const values = [parseInt(planner_items_id), name, locations];
-        const response = await pool.query(text,values);
-        console.log("this is the response", response.rows)
+        const text1 = `INSERT INTO planner_location_items (planner_items_id,placename,locations)  VALUES($1,$2,$3)`;
+        const values1 = [parseInt(planner_items_id), name, locations];
+        const response1 = await pool.query(text1,values1);
+
+        console.log("this is the response", response1.rows)
+
+
+
+        const text2 = `SELECT coverphoto FROM planner
+        WHERE plannerid = $1`;
+        const values2 = [plannerId];
+        const respons2 = await pool.query(text2,values2);
+        console.log("respons2",respons2.rows)
+
+        if(respons2.rows[0].coverphoto === null && coverphoto !== "")
+        {
+            console.log("here??")
+            const text3 = `UPDATE planner
+            SET coverphoto = $1 WHERE plannerid = $2`;
+            const values3 = [coverphoto,plannerId];
+            const respons3 = await pool.query(text3,values3);
+            console.log("respons3",respons3.rows);
+            res.status(201).json(respons3.rows);
+        }
+
+        
         // // console.log(response.rows.length)
-        res.status(201).json(response.rows);
+        res.status(201).json(response1.rows);
        
     }
     catch(error)
