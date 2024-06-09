@@ -34,7 +34,7 @@ function App() {
       </main>
     );
   }
-  console.log(user)
+  // console.log(user)
   return (
     <div>
       <NavBar />
@@ -44,7 +44,7 @@ function App() {
         <Routes>
           <Route path="/userprofile" element={<UserProfilePage/>}/>
           <Route path="/userprofile2" element={<UserProfilePage2/>}/>
-          <Route path="/planner" element={<PlannerPage/>}/>
+          <Route path="/usrprofile/:userid" element={<PlannerPage/>}/>
           <Route path="/planner/:plannerId" element={<PlannerDetailPage/>}/>
           <Route path="/map" element={<MapPage/>}/>
           <Route path="/new" element={<NewPage/>}/>

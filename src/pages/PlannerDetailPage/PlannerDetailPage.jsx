@@ -426,7 +426,9 @@ const Filtering = ({date}) => {
         <SearchPlaces plannerDetails={plannerDetails} 
         handleSelect={handleSelect} 
         handleSearch={handleSearch}
-        validate={validate}/>
+        validate={validate}
+        plannerId={plannerId}
+        />
         </div>
         <div style={{height:"50%",backgroundColor: 'yellow'}}> 
          <MarkerMap mapSize={{width: "100%",height: "100%"}} mapData={markerDirection}/>
