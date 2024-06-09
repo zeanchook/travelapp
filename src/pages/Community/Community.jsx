@@ -30,6 +30,7 @@ export default function Community()
             const existingPlanner = acc.find(planner => planner.planner_id === current.planner_id);
             if (!existingPlanner) {
               acc.push({
+                userid: current.id,
                 planner_id: current.planner_id,
                 title: current.title,
                 name: current.name,
@@ -67,6 +68,12 @@ export default function Community()
         navigate(`/planner/${item.planner_id}`)
       }
 
+      const handleUserClick = (e,item) =>
+      {
+        console.log(item)
+        navigate(`/usrprofile/${item.userid}`)
+      }
+
       const Post = () => post && post?.sort((b,a) => 
       {
         if(a.created_at > b.created_at)
@@ -94,7 +101,9 @@ export default function Community()
             
                   <div className="w-16 rounded-full" style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
                     <img src="https://images.twinkl.co.uk/tr/raw/upload/u/ux/earth-parents-wiki_ver_1.jpg" />
-                    <div className="stat-title" >{item.name}</div>
+                    <div className="stat-title" 
+                    onClick={(e) => handleUserClick(e,item)}
+                    >{item.name}</div>
                     {/* <div className="stat-title">{dayjs(item.created_at).format('DD-MMM-YY')}{dayjs().format('DD-MMM-YY') }</div> */}
                     <div className="text-xs">{dayjs(item.created_at).format('DD-MMM-YY')}</div>
                   </div>
