@@ -2,10 +2,13 @@ import { deletePlanner, patchPlannerStatus } from "../../utilities/planner-servi
 import CalenderPicker from "../CalenderPicker/CalenderPicker"
 import { useNavigate } from "react-router-dom"
 import { useAtomValue } from "jotai";
+import dayjs from "dayjs";
 
 export default function TableResults({plannerList, setPlannerList,setheatMapDisplay, setselectedPlanner})
 {
     const navigate = useNavigate();
+    const GTOKEN = process.env.GOOGLEMAP_API;
+
 
     const handleClick = (e) =>
     {
@@ -87,38 +90,93 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
                             </td>                               
                     </tr>)
         })
-    return(
 
-        <div className="relative overflow-x-auto">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead className="text-xs text-gray-900 uppercase dark:text-gray-400">
-                    <tr>
-                        <th scope="col" className="px-6 py-3">
-                            Title
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Created At
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Updated At
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Trip Length
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Trip Status
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <TableRow />
-                    
-                </tbody>
-            </table>
+    const MyData = () => plannerList?.map((item,idx) =>
+    {
+        console.log(item)
+        let url = "https://as1.ftcdn.net/v2/jpg/02/07/72/54/1000_F_207725426_TeMaoHbZgOs4sLJt03yyEO5E7uQh6vnQ.jpg" 
+        if(item.coverphoto)
+        {
+            url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&maxheight=200&photoreference=
+        ${item.coverphoto}&key=${GTOKEN}`
+        console.log(url)
+        }
+        
 
+        
+        return(<div style={{margin:"10px",padding:"10px",backgroundColor:"white"}} key={idx}>
+            <div style={{padding:"20px"}}>
+            <img src={url} style={{height: "20vh", width: "30vh"}}
+            /></div>
+
+            <div style={{display:'flex',flexDirection:'row',justifyContent:"space-between",
+            alignItems:'center',padding:"5px",fontFamily:"sans-serif"
+            }}>
+            <div className="hover:underline hover:cursor-pointer" 
+            style={{whiteSpace:"nowrap",marginRight:"10px",fontSize:"20px"}}
+            name={item.plannerid} onClick={handleClick} 
+            >{item.title}
+            </div>
+            <div>
+            {item.status === "Planned" ? 
+            <button style={{borderRadius:"10px",backgroundColor:"orange",textAlign:"center", padding:"5px"}}
+            onClick={(e) => handleStatus(e,item)}
+            >{item.status}</button> : 
+            <button style={{borderRadius:"10px",backgroundColor:"green",textAlign:"center",padding:"5px"}}
+            onClick={(e) => handleStatus(e,item)}
+            >{item.status}</button>}
+            <button style={{borderRadius:"10px",backgroundColor:"red",textAlign:"center",padding:"5px",marginLeft:"5px"}}
+            onClick={(e) => handleDelete(e,item)}
+            >Delete</button>
+            </div>
+            </div>
+
+
+            {/* <div >{dayjs(item.created_at).format("DD MMM")}</div> */}
+            <div style={{display:'flex',color:"grey"}}>
+            <div >{dayjs(item.startdate).format("DD MMM")+" - "+dayjs(item.enddate).format("DD MMM YY")+" • "+parseInt(item.dayslength)+" days"}</div>
+            {/* <div >{item.created_at}</div> */}
+            {/* <div >{parseInt(item.dayslength)} days</div> */}
+            </div>
+            
+            </div>)
+    })
+    return(<div>
+        <div style={{backgroundColor:"yellow",display:"flex",flexWrap:"wrap"}}>
+            <MyData/>
         </div>
+    </div>
+
+        // <div className="relative overflow-x-auto">
+        //     <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        //         <thead className="text-xs text-gray-900 uppercase dark:text-gray-400">
+        //             <tr>
+        //                 <th scope="col" className="px-6 py-3">
+        //                     Title
+        //                 </th>
+        //                 <th scope="col" className="px-6 py-3">
+        //                     Created At
+        //                 </th>
+        //                 <th scope="col" className="px-6 py-3">
+        //                     Updated At
+        //                 </th>
+        //                 <th scope="col" className="px-6 py-3">
+        //                     Trip Length
+        //                 </th>
+        //                 <th scope="col" className="px-6 py-3">
+        //                     Trip Status
+        //                 </th>
+        //                 <th scope="col" className="px-6 py-3">
+        //                     Action
+        //                 </th>
+        //             </tr>
+        //         </thead>
+        //         <tbody>
+        //             <TableRow />
+                    
+        //         </tbody>
+        //     </table>
+
+        // </div>
         )
 }
