@@ -7,6 +7,8 @@ router.post("/signup", myUserControl.create);
 router.post("/login", myUserControl.login);
 router.get("/index", myUserControl.index);
 
+router.patch("/getUserDetails", myUserControl.getUserDetails);
+
 router.delete("/delete", myUserControl.deleteUser);
 router.patch("/updateUserLevel", myUserControl.updateUserLevel);
 

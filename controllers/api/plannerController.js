@@ -69,6 +69,8 @@ const create = async (req,res) => {
 
 const index = async (req,res) => {
 
+    console.log(req.body)
+    const [visitedUser] = req.body
     const pool = new Pool({
         connectionString,
         });
@@ -81,11 +83,14 @@ const index = async (req,res) => {
     // JOIN planner_items ON planner_items.planner_id = planner.id
     try
     {
+
+        //update total location before query
+
         
         const text = `SELECT * FROM users
         JOIN planner ON users.id = planner.user_id
         WHERE users.name = $1`;
-        const values = [name];
+        const values = [visitedUser.name];
         const response = await pool.query(text,values);
         // console.log("this is the response", response.rows)
         console.log(response.rows.length)
@@ -250,9 +255,22 @@ console.log(plannerId)
         const respons2 = await pool.query(text2,values2);
         console.log("respons2",respons2.rows)
 
+        //patching total location 
+        const patching = `UPDATE planner
+        SET ref_count = (
+        SELECT COUNT(*) FROM users
+        JOIN planner ON users.id = planner.user_id
+        JOIN planner_items ON planner_items.planner_id = planner.plannerid
+        JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
+        WHERE plannerid = $1)
+        WHERE plannerid = $1`;
+
+        const patchingVal = [plannerId];
+        const patchingResponse = await pool.query(patching,patchingVal);
+        console.log("??",patchingResponse)
+
         if(respons2.rows[0].coverphoto === null && coverphoto !== "")
         {
-            console.log("here??")
             const text3 = `UPDATE planner
             SET coverphoto = $1 WHERE plannerid = $2`;
             const values3 = [coverphoto,plannerId];
@@ -442,23 +460,23 @@ const patchDaysItinerary = async (req,res) => {
 
             const getUserPlannerStats = async (req,res) => {
 
-                const [ user ] = (req.body)
+                const  user  = (req.body)
                     const pool = new Pool({
                         connectionString,
                         });
     
-                    
+                    console.log(user)
                 
                     try
                     {
-                        const text1 = `SELECT users.name, planner.title, planner.status 
+                        const text1 = `SELECT users.name, planner.title, planner.status,users.views
                         FROM users
                         JOIN planner ON users.id = planner.user_id
                         JOIN planner_items ON planner_items.planner_id = planner.plannerid
                         JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
-                        WHERE users.name = $1`;
+                        WHERE users.id = $1`;
                         
-                        const values1 = [user.name];
+                        const values1 = [user.id];
         
                         const response1 = await pool.query(text1,values1);
                         console.log("this is the response", response1.rows)
