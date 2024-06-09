@@ -3,11 +3,21 @@ import CalenderPicker from "../CalenderPicker/CalenderPicker"
 import { useNavigate } from "react-router-dom"
 import { useAtomValue } from "jotai";
 import dayjs from "dayjs";
+import { loginSts } from "../../../atom";
 
 export default function TableResults({plannerList, setPlannerList,setheatMapDisplay, setselectedPlanner})
 {
     const navigate = useNavigate();
     const GTOKEN = process.env.GOOGLEMAP_API;
+
+    const [currentUser] = useAtomValue(loginSts)
+    // console.log(currentUser)
+
+    const [visitingUser] = plannerList
+    // console.log(visitingUser)
+    const isValidUser = currentUser?.id === visitingUser?.id
+
+    console.log(isValidUser)
 
 
     const handleClick = (e) =>
@@ -102,12 +112,15 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
         console.log(url)
         }
         
-
+        // console.log(vis)
         
-        return(<div style={{margin:"10px",padding:"10px",backgroundColor:"white"}} key={idx}>
-            <div style={{padding:"20px"}}>
-            <img src={url} style={{height: "20vh", width: "30vh",borderRadius:"20px"}}
-            /></div>
+        return(<div style={{margin:"20px",padding:"20px",backgroundColor:""}} key={idx}>
+            <div >
+            <img src={url} style={{height: "20vh", width: "30vh",borderRadius:"20px",}} className="hover:cursor-pointer"
+            name={item.plannerid} onClick={handleClick} 
+            />
+            <div style={{padding:"5px"}}></div>
+            </div>
 
             <div style={{display:'flex',flexDirection:'row',justifyContent:"space-between",
             alignItems:'center',padding:"5px",fontFamily:"sans-serif"
@@ -117,24 +130,26 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
             name={item.plannerid} onClick={handleClick} 
             >{item.title}
             </div>
+            {isValidUser &&
             <div>
             {item.status === "Planned" ? 
-            <button style={{borderRadius:"10px",backgroundColor:"orange",textAlign:"center", padding:"5px"}}
+            <button style={{borderRadius:"10px",backgroundColor:"orange",textAlign:"center", padding:"5px",fontSize:"10px"}}
             onClick={(e) => handleStatus(e,item)}
             >{item.status}</button> : 
-            <button style={{borderRadius:"10px",backgroundColor:"green",textAlign:"center",padding:"5px"}}
+            <button style={{borderRadius:"10px",backgroundColor:"green",textAlign:"center",padding:"5px",fontSize:"10px"}}
             onClick={(e) => handleStatus(e,item)}
             >{item.status}</button>}
-            <button style={{borderRadius:"10px",backgroundColor:"red",textAlign:"center",padding:"5px",marginLeft:"5px"}}
+            <button style={{borderRadius:"10px",backgroundColor:"red",textAlign:"center",padding:"5px",marginLeft:"5px",fontSize:"10px"}}
             onClick={(e) => handleDelete(e,item)}
             >Delete</button>
-            </div>
+            </div>}
             </div>
 
 
             {/* <div >{dayjs(item.created_at).format("DD MMM")}</div> */}
             <div style={{display:'flex',color:"grey"}}>
-            <div >{dayjs(item.startdate).format("DD MMM")+" - "+dayjs(item.enddate).format("DD MMM YY")+
+            <div style={{padding:"2px"}}></div>
+            <div style={{fontSize:"13px"}}>{dayjs(item.startdate).format("DD MMM")+" - "+dayjs(item.enddate).format("DD MMM YY")+
             " • "+parseInt(item.dayslength)+" days"+" • "+item.ref_count+" places "}</div>
             {/* <div >{item.created_at}</div> */}
             {/* <div >{parseInt(item.dayslength)} days</div> */}
@@ -142,8 +157,9 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
             
             </div>)
     })
-    return(<div>
-        <div style={{backgroundColor:"yellow",display:"flex",flexWrap:"wrap"}}>
+    return(<div style={{display:'flex',flexDirection:"column",alignItems:"center"}}>
+        <b style={{fontSize:"20px",padding:"20px"}}>Your Plans 📒</b>
+        <div style={{backgroundColor:"",display:"flex",flexWrap:"wrap"}}>
             <MyData/>
         </div>
     </div>
