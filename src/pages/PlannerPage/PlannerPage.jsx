@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import TableResults from "../../components/TableResults/TableResults"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useParams } from "react-router-dom"
 
 import { useNavigate } from "react-router-dom"
 
@@ -18,6 +19,7 @@ import UserCard from "../../components/UserCard/UserCard"
 import dayjs from "dayjs"
 
 import { loginSts } from "../../../atom"
+import { getUserDetails } from "../../utilities/users-service"
 
 
 
@@ -25,14 +27,21 @@ export default function PlannerPage()
 {
     const [plannerList, setPlannerList] = useState("");
     const [heatMap, setheatMap] = useState(false);
-
+    const [ userState , setUserState ] = useState("")
     const [myheatMap, setmyheatMap] = useState(false);
+
+    const GTOKEN = process.env.GOOGLEMAP_API;
+
+    const {userid} = useParams();
+    const visitedUser = userid
+
 
     const [selectedPlanner , setselectedPlanner] = useState("")
 
     const [newForm, setnewForm] = useState(false);
     const [formValue , setFormValue] = useState("")
     const [loadingSts ,setLoadingSts] = useState(false);
+    const [ visitedUserState , setvisitedUserState ] = useState("")
 
     const [userStats ,setUserStats] = useState("")
   
@@ -77,7 +86,7 @@ export default function PlannerPage()
       setheatMap(false)
       setPlannerList("")
       setnewForm(false)
-      let results = await getPlanner();
+      let results = await getPlanner(visitedUserState);
       console.log(results)
       setPlannerList(results)
       setLoadingSts(false)
@@ -95,6 +104,7 @@ export default function PlannerPage()
     }
 
     useEffect(() => {
+      let ignore = false;
      async function getAllDetails(name)
      {
               const response = await getUserStats(name)
@@ -102,6 +112,7 @@ export default function PlannerPage()
               
               let titleCount = 0;
       let completedCount = 0;
+      let views = 0;
       const titleSet = new Set();
       console.log(titleSet)
       for (let i = 0; i < response.length; i++) {
@@ -112,18 +123,33 @@ export default function PlannerPage()
           titleSet.add(response[i].title);
           titleCount++;
         }
+        views = response[i].views
       }
 
-      const result = { title: titleCount, completed: completedCount };
+      const result = { title: titleCount, completed: completedCount, views: views };
       console.log(result)
+      if(!ignore){
       setUserStats(result)
+      }
      }
-     if(currentUser)
+
+     async function getVisitUserDetails(id)
      {
-      getAllDetails(currentUser);
+        const response = await getUserDetails(id);
+        console.log(response)
+        setvisitedUserState(response)
+     }
+     //! change to visited id 
+     if(visitedUser)
+     {
+      // const [ user ] = currentUser
+      // setUserState(user)
+      getVisitUserDetails({id: visitedUser})
+      getAllDetails({id: visitedUser});
      }
      
-    }, []);
+     return () => {ignore = true;};
+    }, [visitedUser]);
 
       // console.log(plannerList)
     
@@ -149,21 +175,21 @@ export default function PlannerPage()
 
     return(<div style={{ display: 'flex', height: '100vh'}}>
       <div style={{ width: '40%', overflowY: 'scroll', marginBottom: "300px", display:"flex", flexDirection: "column", justifyContent:"center"}}>
-          <UserCard 
-          currentUser={currentUser} 
+          {visitedUserState && <UserCard 
+          currentUser={visitedUserState} 
           userStats={userStats} 
           handleGetHeatMap={handleGetHeatMap}
           handleCreate={handleCreate}
           handleGetPlanner={handleGetPlanner}
-          />
+          />}
         </div>
 
         <div style={{ width: '60%',}}>
 
-        <div style={{height:"40%", backgroundColor: "yellow", 
+        <div style={{height:"40%", backgroundColor: "", 
         justifyContent:'center', 
         display:"flex", alignItems:"center"}}> 
-        <HeatMap mapSize={{width: "35vw",height: "35vh",borderRadius:"10px"}}/>
+        {/* {userState && <HeatMap selectedPlanner={{selected : userState , type: "userheatmap"}} mapSize={{width: "35vw",height: "35vh",borderRadius:"10px"}}/>} */}
         </div>
 
 
@@ -205,9 +231,9 @@ export default function PlannerPage()
           setselectedPlanner={setselectedPlanner}
         />}
 
-        {(heatMap && !myheatMap) && <HeatMap selectedPlanner={selectedPlanner}/>}
+        {/* {(heatMap && !myheatMap) && <HeatMap selectedPlanner={selectedPlanner}/>} */}
 
-        {myheatMap &&  <HeatMap selectedPlanner={selectedPlanner} mapSize={{width: "50vw",height: "50vh"}}/>}
+        {/* {myheatMap &&  <HeatMap selectedPlanner={selectedPlanner} mapSize={{width: "50vw",height: "50vh"}}/>} */}
   
         </div>
         </div>
