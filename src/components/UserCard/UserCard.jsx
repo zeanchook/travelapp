@@ -1,7 +1,17 @@
+import { useAtomValue } from "jotai";
+import { tiers } from "../../../atom";
+
 export default function UserCard({currentUser, userStats, handleGetHeatMap, handleCreate, handleGetPlanner})
 {
     const [user] = currentUser
+    const tiersValue = useAtomValue(tiers)
+    console.log(tiersValue)
+    console.log(user.usertype)
 
+    const findusertype = (tiersValue && user) && tiersValue.findIndex(item => item.name === user.usertype)
+    console.log(findusertype)
+
+    console.log(currentUser)
     const handleHeatMapClicker = () =>
     {
         handleGetHeatMap();
@@ -30,16 +40,18 @@ export default function UserCard({currentUser, userStats, handleGetHeatMap, hand
         </div>
         <div className="text-center mt-2" style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
             <h2 className="font-semibold">{user.name}</h2>
-            <p className="text-gray-500 border-rose-700	border-2 w-24 rounded-lg text-xs">{user.usertype}</p>
+            <p style={tiersValue[findusertype]?.style}>{user.usertype}</p>
+            {/* className="text-gray-500 border-rose-700	border-2 w-24 rounded-lg text-xs" */}
         </div>
         <ul className="py-4 mt-2 text-gray-700 flex items-center justify-around">
             <li className="flex flex-col items-center justify-around">
                 👁️
-                <div>-</div>
+                <div>{userStats.views}</div>
             </li>
             <li className="flex flex-col items-center justify-between" style={{cursor:"pointer"}}
                 onClick={handleGoAndGetThatPlanner}
             >
+                {/* findusertype */}
                 📒
                 <div>{userStats.title}</div>
             </li>
