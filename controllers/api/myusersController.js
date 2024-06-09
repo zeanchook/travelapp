@@ -149,6 +149,35 @@ const updateUserLevel = async (req,res) => {
     }
 };
 
+const getUserDetails = async (req,res) => {
+    // debug("body: %o", req.body);
+      
+    console.log("this",req.body)
+    const { id } = req.body
+    console.log("this",id)
+    const pool = new Pool({
+        connectionString,
+        });
+
+    try
+    {
+      
+        const text = `SELECT * FROM users 
+        WHERE users.id = $1`;
+        const values = [id]
+        const response = await pool.query(text,values);
+        const responseResult = response.rows
+        console.log("this",responseResult)
+        res.status(201).json(responseResult);
+       
+    }
+    catch(error)
+    {
+        debug("error: %o", error);
+        res.status(500).json( error.detail );
+    }
+};
+
 
 
 //   const create = async (req,res) => {
@@ -194,5 +223,6 @@ const updateUserLevel = async (req,res) => {
     login,
     index,
     deleteUser,
-    updateUserLevel
+    updateUserLevel,
+    getUserDetails
   };

@@ -84,3 +84,11 @@ export const updateUserLevel = async(item) =>
     const response = await sendRequest(url,"PATCH",item)
     return response;         
 }
+
+export const getUserDetails = async(item) =>
+{
+  const url = `/api/myusers/getUserDetails`
+  // console.log(item)
+  const response = await sendRequest(url,"PATCH",item)
+  return response;  
+}
