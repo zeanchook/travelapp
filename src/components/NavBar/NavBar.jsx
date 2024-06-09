@@ -11,11 +11,15 @@ export default function NavBar() {
   };
   console.log(user)
 
+  const [ currentUser ] = user;
+  
+  const routes = `/usrprofile/${currentUser.id}`
+
   return (
     <nav style={{backgroundColor:"grey"}}>
       <NavLink to="/">Home</NavLink>
       &nbsp; | &nbsp;
-      <NavLink to="/planner/">My Profile</NavLink>
+      <NavLink to={routes}>My Profile</NavLink>
       &nbsp;&nbsp;
       <Link to="" onClick={handleLogOut}>
         Log Out {user[0].name}
