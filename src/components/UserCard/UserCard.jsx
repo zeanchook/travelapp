@@ -3,7 +3,7 @@ import { loginSts, tiers } from "../../../atom";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-export default function UserCard({currentUser: selectedUser, userStats, handleGetHeatMap, handleCreate, handleGetPlanner})
+export default function UserCard({currentUser: selectedUser, userStats, handleGetHeatMap, handleGetPlanner})
 {
     const [user] = selectedUser
     const [currentUser] = useAtomValue(loginSts)
@@ -48,11 +48,6 @@ export default function UserCard({currentUser: selectedUser, userStats, handleGe
     const handleHeatMapClicker = () =>
     {
         handleGetHeatMap();
-    }
-
-    const handleCreatePlanner = () =>
-    {
-        handleCreate();
     }
 
     const handleGoAndGetThatPlanner = () =>
@@ -108,11 +103,5 @@ export default function UserCard({currentUser: selectedUser, userStats, handleGe
                 <div>{userStats.completed}</div>
             </li>
         </ul>
-        <div className="p-4 border-t mx-8 mt-2">
-            <button className="w-1/2 block mx-auto rounded-full bg-gray-900 hover:shadow-lg font-semibold text-white px-6 py-2"
-                onClick={handleCreatePlanner}
-            >
-                Create a Planner</button>
-        </div>
     </div>)
 }

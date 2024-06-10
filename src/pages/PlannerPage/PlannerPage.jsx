@@ -19,7 +19,7 @@ import UserCard from "../../components/UserCard/UserCard"
 import dayjs from "dayjs"
 
 import { loginSts } from "../../../atom"
-import { getUserDetails } from "../../utilities/users-service"
+import { getUserDetails, patchViewer } from "../../utilities/users-service"
 
 
 
@@ -30,6 +30,8 @@ export default function PlannerPage()
     const [ userState , setUserState ] = useState("")
     const [myheatMap, setmyheatMap] = useState(false);
 
+    const [owner , setOwner] = useState(false)
+
     const GTOKEN = process.env.GOOGLEMAP_API;
 
     const {userid} = useParams();
@@ -38,59 +40,29 @@ export default function PlannerPage()
 
     const [selectedPlanner , setselectedPlanner] = useState("")
 
-    const [newForm, setnewForm] = useState(false);
-    const [formValue , setFormValue] = useState("")
+
+
     const [loadingSts ,setLoadingSts] = useState(false);
     const [ visitedUserState , setvisitedUserState ] = useState("")
 
     const [userStats ,setUserStats] = useState("")
-  
-    const dateValue = useAtomValue(currentSelectedRange);
-
     const currentUser = useAtomValue(loginSts)
     console.log(currentUser)
-    const numDays = parseInt(dayjs(dateValue.endDate).format('DD/MM/YYYY'))-parseInt(dayjs(dateValue.startDate).format('DD/MM/YYYY'));
     console.log(plannerList)
-    const handleCreate = () =>
-    {
-      setnewForm(true)
-      setPlannerList("")
-    }
 
-    const handleChange = (e) =>
-    {
-      setFormValue({title: e.target.value})
-    }
 
-    const handleSubmit = async(e) =>
-    {
-      e.preventDefault();
-      console.log(formValue)
-
-      console.log({...dateValue,...formValue})
-      const result = await createPlanner({...dateValue,...formValue,daysLength:numDays})
-      console.log(result)
-      // if(typeof(result) === "string")
-      // {
-      //   toast(result)
-      // }
-      // else{
-      //   toast(`${formValue} created succesfully !`)
-      // }
-    }
- 
     const handleGetPlanner = async(e) => 
     {
       setLoadingSts(true);
       setmyheatMap(false)
       setheatMap(false)
       setPlannerList("")
-      setnewForm(false)
       let results = await getPlanner(visitedUserState);
       console.log(results)
       setPlannerList(results)
       setLoadingSts(false)
     }
+
 
     const handleGetHeatMap = () =>
     {
@@ -105,6 +77,28 @@ export default function PlannerPage()
 
     useEffect(() => {
       let ignore = false;
+      const [ user ] = currentUser
+      async function patchingViewer(curr,visit)
+     {
+        const item = {currentid: curr, viewer: visit}
+        const response = await patchViewer(item)
+        console.log(response)
+     }
+
+     if(parseInt(visitedUser) !== parseInt(user.id))
+     {
+      console.log("true")
+      const currentUserId = parseInt(user.id)
+      const visitingUserId = parseInt(visitedUser)
+      patchingViewer(currentUserId,visitingUserId)
+     }
+
+      return () => {ignore = true;};
+    }, [currentUser, visitedUser]);
+
+    useEffect(() => {
+      let ignore = false;
+      const [ user ] = currentUser
      async function getAllDetails(name)
      {
               const response = await getUserStats(name)
@@ -137,9 +131,25 @@ export default function PlannerPage()
      {
         const response = await getUserDetails(id);
         console.log(response)
+
+        const [ usercheck ] = currentUser
+        setOwner(parseInt(user.id) === parseInt(usercheck.id))
         setvisitedUserState(response)
+        setLoadingSts(true);
+        setmyheatMap(false)
+        setheatMap(false)
+        setPlannerList("")
+        let results = await getPlanner(response);
+        console.log(results)
+        setPlannerList(results)
+        setLoadingSts(false)
+        //?
      }
      //! change to visited id 
+
+     
+
+     
      if(visitedUser)
      {
       // const [ user ] = currentUser
@@ -166,56 +176,36 @@ export default function PlannerPage()
   </div>)
     }
 
- 
-
-
-
-    console.log(plannerList)
-    
-
     return(<div style={{ display: 'flex', height: '100vh'}}>
-      <div style={{ width: '40%', overflowY: 'scroll', marginBottom: "300px", display:"flex", flexDirection: "column", justifyContent:"center"}}>
+      <div style={{ width: '30%',
+        display:"flex",flexDirection:"row",justifyContent:"end"
+      ,backgroundColor:""
+      }}>
+        
+        {/* <div style={{display:'flex',background:"red", justifyContent:"right",flexDirection:"row"}}> */}
+        <div>
           {visitedUserState && <UserCard 
           currentUser={visitedUserState} 
           userStats={userStats} 
           handleGetHeatMap={handleGetHeatMap}
-          handleCreate={handleCreate}
           handleGetPlanner={handleGetPlanner}
           />}
-        </div>
+          
+          </div>
+          </div>
+          {/* <div style={{backgroundColor:"grey"}}>ffff</div> */}
+        {/* </div> */}
 
-        <div style={{ width: '60%',}}>
+        <div style={{ width: '70%',}}>
 
         <div style={{height:"40%", backgroundColor: "", 
-        justifyContent:'center', 
+        justifyContent:"end", flexDirection:"column",
         display:"flex", alignItems:"center"}}> 
-        {/* {userState && <HeatMap selectedPlanner={{selected : userState , type: "userheatmap"}} mapSize={{width: "35vw",height: "35vh",borderRadius:"10px"}}/>} */}
+        {visitedUserState && <HeatMap selectedPlanner={{selected : userState , type: "userheatmap"}} mapSize={{width: "35vw",height: "35vh",borderRadius:"10px"}}/>}
         </div>
 
 
-        <div style={{height:"60%", backgroundColor: "grey", justifyContent:'center', display:"flex", overflowY: 'scroll'}}> 
-        {newForm &&
-        <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
-        <div className="mb-5">
-          <label htmlFor="text" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New Planner Name</label>
-          <input type="text" id="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-          onChange={handleChange}
-          required />
-        </div>
-
-        <div className="mb-5">
-          <label htmlFor="text" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date Range</label>
-          <CalenderPicker />
-        </div>
-        <div className="mb-5">
-          <p>{dateValue.default === "no" && `Trip Length : ${numDays}`}</p>
-        </div>
-        
-        <button type="submit" 
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-        Create</button>
-      </form>
-        }
+        <div style={{height:"60%", backgroundColor: "", justifyContent:'center', display:"flex", overflowY: 'scroll'}}> 
         <ToastContainer />
         
         
@@ -224,11 +214,12 @@ export default function PlannerPage()
 
         {(plannerList && !myheatMap ) && 
         <TableResults 
-        plannerList={plannerList}
-        setPlannerList={setPlannerList}
-
+          plannerList={plannerList}
+          setPlannerList={setPlannerList}
           setheatMapDisplay={setheatMap} 
           setselectedPlanner={setselectedPlanner}
+          owner={owner}
+          planner={visitedUserState}
         />}
 
         {/* {(heatMap && !myheatMap) && <HeatMap selectedPlanner={selectedPlanner}/>} */}
