@@ -92,3 +92,21 @@ export const getUserDetails = async(item) =>
   const response = await sendRequest(url,"PATCH",item)
   return response;  
 }
+
+export const patchViewer = async(item) =>
+{
+  console.log(item)
+  const url = `/api/myusers/patchViewer`
+  // console.log(item)
+  const response = await sendRequest(url,"PATCH",item)
+  return response;  
+}
+
+export const getViewer = async(item) =>
+{
+  console.log(item)
+  const url = `/api/myusers/getViewer`
+  // console.log(item)
+  const response = await sendRequest(url,"PATCH",item)
+  return response;  
+}

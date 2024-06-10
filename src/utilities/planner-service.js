@@ -7,10 +7,10 @@ export const createPlanner = async(item) =>
     return response;         
 }
 
-export const getPlanner = async() =>
+export const getPlanner = async(item) =>
 {
     const url = `/api/planner/get`
-    const response = await sendRequest(url,"GET")
+    const response = await sendRequest(url,"PATCH",item)
     return response;         
 }
 
