@@ -178,6 +178,82 @@ const getUserDetails = async (req,res) => {
     }
 };
 
+const patchViewer = async (req,res) => {
+    // debug("body: %o", req.body);
+      
+    console.log("this viewer",req.body)
+    const {currentid,viewer} = req.body
+    console.log(currentid,viewer)
+    const { id } = req.body
+    console.log("this",id)
+    const pool = new Pool({
+        connectionString,
+        });
+
+    try
+    {
+
+        const text = "INSERT INTO usersviewer (user_id,visiting_id) VALUES($1,$2) RETURNING *";
+        const values = [currentid,viewer];
+    
+        const response = await pool.query(text,values);
+        const responseResult = response.rows
+        console.log("this",responseResult)
+
+        const text2 = `UPDATE users
+        SET views = (
+            SELECT COUNT(*) FROM usersviewer
+            where visiting_id = $1)
+        WHERE id = $1`;
+        const value2 = [viewer];
+
+        
+    
+        const response2 = await pool.query(text2,value2);
+        const responseResult2 = response2.rows
+        console.log("this",responseResult2)
+        // res.status(201).json(responseResult);
+       
+    }
+    catch(error)
+    {
+        debug("error: %o", error);
+        res.status(500).json( error.detail );
+    }
+};
+
+const getViewer = async (req,res) => {
+    // debug("body: %o", req.body);
+      
+    console.log("this viewer",req.body)
+    const {userid} = req.body
+
+    const pool = new Pool({
+        connectionString,
+        });
+
+    try
+    {
+
+        const text = `SELECT users.id,users.name,created_at FROM users
+        JOIN usersviewer ON users.id = user_id
+        WHERE usersviewer.visiting_id = $1`;
+        const values = [userid];
+    
+        const response = await pool.query(text,values);
+        const responseResult = response.rows
+        console.log("this",responseResult)
+
+        res.status(201).json(responseResult);
+       
+    }
+    catch(error)
+    {
+        debug("error: %o", error);
+        res.status(500).json( error.detail );
+    }
+};
+
 
 
 //   const create = async (req,res) => {
@@ -224,5 +300,7 @@ const getUserDetails = async (req,res) => {
     index,
     deleteUser,
     updateUserLevel,
-    getUserDetails
+    getUserDetails,
+    patchViewer,
+    getViewer
   };
