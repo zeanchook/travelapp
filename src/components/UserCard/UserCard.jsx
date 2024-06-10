@@ -1,17 +1,50 @@
 import { useAtomValue } from "jotai";
-import { tiers } from "../../../atom";
+import { loginSts, tiers } from "../../../atom";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-export default function UserCard({currentUser, userStats, handleGetHeatMap, handleCreate, handleGetPlanner})
+export default function UserCard({currentUser: selectedUser, userStats, handleGetHeatMap, handleCreate, handleGetPlanner})
 {
-    const [user] = currentUser
+    const [user] = selectedUser
+    const [currentUser] = useAtomValue(loginSts)
+
+    const [owner , setOwner] = useState("")
+
+    
     const tiersValue = useAtomValue(tiers)
     console.log(tiersValue)
     console.log(user.usertype)
 
+    console.log(user,currentUser)
+
+    useEffect(() => {
+        let ignore = false;
+        
+        function isOwner()
+        {
+            console.log(user,currentUser)
+            if(!ignore)
+            {
+                setOwner(parseInt(user.id) === parseInt(currentUser.id))
+                
+            }
+        }
+
+        isOwner();
+
+        return () => {ignore = true;};
+      }, [user]);
+
+
+
+    console.log(owner)
+
     const findusertype = (tiersValue && user) && tiersValue.findIndex(item => item.name === user.usertype)
     console.log(findusertype)
 
-    console.log(currentUser)
+    const navigate = useNavigate();
+
+    console.log(selectedUser)
     const handleHeatMapClicker = () =>
     {
         handleGetHeatMap();
@@ -25,6 +58,11 @@ export default function UserCard({currentUser, userStats, handleGetHeatMap, hand
     const handleGoAndGetThatPlanner = () =>
     {
         handleGetPlanner();
+    }
+
+    const handleGetViewer = () =>
+    {
+        navigate("/userviewerpage")
     }
 
     return(
@@ -44,10 +82,18 @@ export default function UserCard({currentUser, userStats, handleGetHeatMap, hand
             {/* className="text-gray-500 border-rose-700	border-2 w-24 rounded-lg text-xs" */}
         </div>
         <ul className="py-4 mt-2 text-gray-700 flex items-center justify-around">
-            <li className="flex flex-col items-center justify-around">
+            {owner ? <li className="flex flex-col items-center justify-around"
+                onClick={handleGetViewer}
+            >
                 👁️
                 <div>{userStats.views}</div>
-            </li>
+            </li> : 
+            <li className="flex flex-col items-center justify-around"
+        >
+            👁️
+            <div>{userStats.views}</div>
+        </li>
+            }
             <li className="flex flex-col items-center justify-between" style={{cursor:"pointer"}}
                 onClick={handleGoAndGetThatPlanner}
             >
