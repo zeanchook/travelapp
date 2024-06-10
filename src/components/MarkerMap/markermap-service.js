@@ -153,5 +153,10 @@ export const markerService = (onSelectCity,mapData,data) =>
         const averageLongitude = sumLongitudes / data.length;
         onSelectCity({longitude: averageLongitude, latitude: averageLatitude},8)
     }
+    else if(mapData.type === "POST" && mapData.selected.length !== 0)
+    {
+      console.log(data)
+        onSelectCity({longitude: data[0].longitude, latitude: data[0].latitude},7)
+    }
   } 
 }
