@@ -4,20 +4,25 @@ import { useNavigate } from "react-router-dom"
 import { useAtomValue } from "jotai";
 import dayjs from "dayjs";
 import { loginSts } from "../../../atom";
+import { useState } from "react";
 
-export default function TableResults({plannerList, setPlannerList,setheatMapDisplay, setselectedPlanner})
+export default function TableResults({plannerList, setPlannerList,setheatMapDisplay, setselectedPlanner, owner, planner})
 {
     const navigate = useNavigate();
     const GTOKEN = process.env.GOOGLEMAP_API;
 
     const [currentUser] = useAtomValue(loginSts)
-    // console.log(currentUser)
-
     const [visitingUser] = plannerList
     // console.log(visitingUser)
     const isValidUser = currentUser?.id === visitingUser?.id
 
     console.log(isValidUser)
+    
+    console.log(planner)
+
+    const [ plannerOwner ] = planner
+
+
 
 
     const handleClick = (e) =>
@@ -113,10 +118,11 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
         }
         
         // console.log(vis)
+        console.log(owner)
         
         return(<div style={{margin:"20px",padding:"20px",backgroundColor:""}} key={idx}>
-            <div >
-            <img src={url} style={{height: "20vh", width: "30vh",borderRadius:"20px",}} className="hover:cursor-pointer"
+            <div style={{background:"",display:"flex",justifyContent:"center"}}>
+            <img src={url} style={{height: "18vh", width: "28vh",borderRadius:"20px",}} className="hover:cursor-pointer"
             name={item.plannerid} onClick={handleClick} 
             />
             <div style={{padding:"5px"}}></div>
@@ -130,7 +136,7 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
             name={item.plannerid} onClick={handleClick} 
             >{item.title}
             </div>
-            {isValidUser &&
+            {owner &&
             <div>
             {item.status === "Planned" ? 
             <button style={{borderRadius:"10px",backgroundColor:"orange",textAlign:"center", padding:"5px",fontSize:"10px"}}
@@ -150,7 +156,7 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
             <div style={{display:'flex',color:"grey"}}>
             <div style={{padding:"2px"}}></div>
             <div style={{fontSize:"13px"}}>{dayjs(item.startdate).format("DD MMM")+" - "+dayjs(item.enddate).format("DD MMM YY")+
-            " • "+parseInt(item.dayslength)+" days"+" • "+item.ref_count+" places "}</div>
+            " • "+parseInt(item.dayslength)+" days"+" • "+(item.ref_count === null ? 0 : item.ref_count)+" places "}</div>
             {/* <div >{item.created_at}</div> */}
             {/* <div >{parseInt(item.dayslength)} days</div> */}
             </div>
@@ -158,7 +164,9 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
             </div>)
     })
     return(<div style={{display:'flex',flexDirection:"column",alignItems:"center"}}>
-        <b style={{fontSize:"20px",padding:"20px"}}>Your Plans 📒</b>
+        {owner ? <b style={{fontSize:"20px",padding:"20px"}}>Your Plans 📒</b> :
+        <b style={{fontSize:"20px",padding:"20px"}}>{plannerOwner?.name+"'s "} Plans 📒</b>
+        }
         <div style={{backgroundColor:"",display:"flex",flexWrap:"wrap"}}>
             <MyData/>
         </div>
