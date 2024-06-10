@@ -57,6 +57,7 @@ const [mapStyle, setMapStyle] = useState("")
   const data =  mapData && processData(mapData)
 
   const onSelectCity = useCallback(({longitude, latitude},zoomlevel) => {
+    console.log(zoomlevel,longitude, latitude)
     mapRef.current?.flyTo({center: [longitude, latitude], duration: 5000, zoom: zoomlevel});
   }, []);
 
@@ -101,11 +102,12 @@ const [mapStyle, setMapStyle] = useState("")
         mapboxAccessToken={MAPBOX_TOKEN}
         // style={{width: "50vw",height: "500vh"}}
       >
-        {/* <GeolocateControl position="top-left" />
+        <div style={{zIndex:"-1"}}>
+        <GeolocateControl position="top-left" />
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" />
-        <ScaleControl /> */}
-        
+        <ScaleControl />
+        </div>
 
         {(mapData) && pins}
   
@@ -123,7 +125,7 @@ const [mapStyle, setMapStyle] = useState("")
             <div >
               {popupInfo.city}
             </div>
-            <img width="50%" src={popupInfo.image} />
+            {popupInfo.image && <img width="50%" src={popupInfo.image} />}
             </div>
           </Popup>
         )}

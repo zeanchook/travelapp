@@ -45,15 +45,15 @@ export default function UserCard({currentUser: selectedUser, userStats, handleGe
     const navigate = useNavigate();
 
     console.log(selectedUser)
-    const handleHeatMapClicker = () =>
-    {
-        handleGetHeatMap();
-    }
+    // const handleHeatMapClicker = () =>
+    // {
+    //     handleGetHeatMap();
+    // }
 
-    const handleGoAndGetThatPlanner = () =>
-    {
-        handleGetPlanner();
-    }
+    // const handleGoAndGetThatPlanner = () =>
+    // {
+    //     handleGetPlanner();
+    // }
 
     const handleGetViewer = () =>
     {
@@ -83,21 +83,21 @@ export default function UserCard({currentUser: selectedUser, userStats, handleGe
                 👁️
                 <div>{userStats.views}</div>
             </li> : 
-            <li className="flex flex-col items-center justify-around"
+            <li className="flex flex-col items-center justify-around" style={{cursor:"pointer"}}
         >
             👁️
             <div>{userStats.views}</div>
         </li>
             }
             <li className="flex flex-col items-center justify-between" style={{cursor:"pointer"}}
-                onClick={handleGoAndGetThatPlanner}
+                // onClick={handleGoAndGetThatPlanner}
             >
                 {/* findusertype */}
                 📒
                 <div>{userStats.title}</div>
             </li>
             <li className="flex flex-col items-center justify-around" style={{cursor:"pointer"}}
-                onClick={handleHeatMapClicker}
+                // onClick={handleHeatMapClicker}
             >
                 🌎
                 <div>{userStats.completed}</div>

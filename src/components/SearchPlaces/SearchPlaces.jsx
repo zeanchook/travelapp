@@ -272,7 +272,7 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
                 plannerId:plannerId, coverphoto: coverPhoto
             }
             console.log(data)
-
+            console.log(selectedDay,data)
             const response = await addLocationItem(selectedDay,data)
             console.log(response);
             // console.log("test")
@@ -286,8 +286,8 @@ export default function SearchPlaces({plannerDetails, handleSelect, handleSearch
     const MyPopup = () =>
     {
         return(
-        <div id='ModelContainer'
-        className='fixed inset-0 bg-black flex justify-center items-center bg-opacity-20 backdrop-blur-sm' style={{zIndex:"1"}}>
+        <div id='ModelContainer' 
+        className='fixed inset-0 bg-black flex justify-center items-center bg-opacity-20 backdrop-blur-sm' style={{zIndex:"10"}}>
         <div 
             className='p-2 bg-white w-10/12 md:w-1/2 lg:1/3 shadow-inner border-e-emerald-600 rounded-lg py-5'
             >

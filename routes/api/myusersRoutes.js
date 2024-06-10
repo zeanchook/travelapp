@@ -12,4 +12,7 @@ router.patch("/getUserDetails", myUserControl.getUserDetails);
 router.delete("/delete", myUserControl.deleteUser);
 router.patch("/updateUserLevel", myUserControl.updateUserLevel);
 
+router.patch("/patchViewer", myUserControl.patchViewer);
+router.patch("/getViewer", myUserControl.getViewer);
+
 module.exports = router;

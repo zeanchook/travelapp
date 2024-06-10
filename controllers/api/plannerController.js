@@ -30,8 +30,8 @@ const create = async (req,res) => {
         const { id } = responseResult
 
         //creating planner
-        const plannerQuery = "INSERT INTO planner (user_id, title, startdate, enddate, dayslength) VALUES ($1, $2, $3, $4, $5) RETURNING *"
-        const plannerValues = [id, title, startDate , endDate , daysLength]
+        const plannerQuery = "INSERT INTO planner (user_id, title, startdate, enddate, dayslength, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *"
+        const plannerValues = [id, title, startDate , endDate , daysLength, "Planned"]
         const plannerResponse = await pool.query(plannerQuery,plannerValues);
         const [ plannerItems ] = plannerResponse.rows
         console.log(plannerItems.id)
@@ -58,7 +58,8 @@ const create = async (req,res) => {
         // const plannerQuery = "INSERT INTO planner (user_id, title) VALUES ($1, $2) RETURNING title,created_at"
         // const plannerValues = [id,item]
         // const plannerResponse = await pool.query(plannerQuery,plannerValues);
-        res.status(201).json(plannerItemsQueryResponse.rows);
+        // console.log("my new planenr id is ",plannerItems.plannerid)
+        res.status(201).json(plannerItems.plannerid);
     }
     catch(error)
     {
@@ -269,17 +270,18 @@ console.log(plannerId)
         const patchingResponse = await pool.query(patching,patchingVal);
         console.log("??",patchingResponse)
 
-        if(respons2.rows[0].coverphoto === null && coverphoto !== "")
+        if(respons2.rows[0].coverphoto === null)
         {
             const text3 = `UPDATE planner
             SET coverphoto = $1 WHERE plannerid = $2`;
             const values3 = [coverphoto,plannerId];
             const respons3 = await pool.query(text3,values3);
             console.log("respons3",respons3.rows);
-            res.status(201).json(respons3.rows);
+            
+            // res.status(201).json(respons3.rows);
         }
 
-        
+        console.log("or here die ?")
         // // console.log(response.rows.length)
         res.status(201).json(response1.rows);
        

@@ -50,8 +50,13 @@ export default function SignUpForm({setOptions}){
   return (
       // <div>
       //   Sign Up
-        <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
-    
+      <div style={{width: "100vw",height: "100vh",background:'url("https://i.redd.it/jmp3w2up1z0d1.jpeg")', backgroundSize:"cover",
+      display:"flex",alignItems:"center",}}>
+       
+        <form className="max-w-sm mx-auto" onSubmit={handleSubmit} style={{borderRadius:"10px",backgroundColor:"white",padding:"50px",opacity:"90%",display:'flex',flexDirection:'column'}}
+        // style={{background:'url("https://i.redd.it/10e6ttd0fp4d1.jpeg")', backgroundSize:"cover"}}
+        >
+     <b style={{fontSize:"30px",textAlign:"center"}}>Sign Up</b>
   <div className="mb-5">
     <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Name</label>
     <input type="name" value={state.name} onChange={handleChange} name="name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />

@@ -36,17 +36,23 @@ export default function LoginForm({setOptions }) {
   const SignIn = () =>
   {
     return(
-      <section className="bg-white dark:bg-gray-900">
-    <div className="container flex items-center justify-center min-h-screen px-6 mx-auto">
+        
+      <section className="bg-white dark:bg-gray-900" 
+      style={{background:'url("https://i.redd.it/jmp3w2up1z0d1.jpeg")', backgroundSize:"cover", 
+      height:"100vh", display:"flex",alignItems:"center"}}>
+         {/* <img style={{width: "100vw",height: "100vh",background:'url("https://i.redd.it/jmp3w2up1z0d1.jpeg")', backgroundSize:"cover",zIndex:"-1",
+      display:"flex"}}></img> */}
+    <div className="container flex items-center justify-center px-6 mx-auto" 
+    style={{backgroundColor:"white",height:"400px",maxWidth:"500px",borderRadius:"10px",opacity:"90%"}}>
         <form className="w-full max-w-md" onSubmit={handleSubmit}>
-            <img className="w-auto h-7 sm:h-8" src="https://merakiui.com/images/logo.svg" alt=""/>
+            {/* <img className="w-auto h-7 sm:h-8" src="https://merakiui.com/images/logo.svg" alt=""/> */}
 
             <h1 className="mt-3 text-2xl font-semibold text-gray-800 capitalize sm:text-3xl dark:text-white">sign In</h1>
 
             <div className="relative flex items-center mt-8">
                 <span className="absolute">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                 </span>
 

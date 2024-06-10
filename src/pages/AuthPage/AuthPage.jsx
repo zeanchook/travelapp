@@ -9,7 +9,7 @@ export default function AuthPage() {
   return (
     <>
       {options === "signup" ? 
-      <div style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>Sign Up<SignUpForm setOptions={setOptions}/></div> : 
+      <div style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}><SignUpForm setOptions={setOptions}/></div> : 
       <LoginForm setOptions={setOptions}/>}
     </>
   );

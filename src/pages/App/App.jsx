@@ -19,6 +19,7 @@ import UserProfilePage from "../UserProfilePage/UserProfilePage";
 import NewPage from "../NewPage";
 import UserProfilePage2 from "../UserProfilePage2/UserProfilePage2";
 import AdminPage from "../AdminPage/AdminPage";
+import UserViewerPage from "../UserViewerPage/UserViewerPage";
 
 const log = debug("mern:pages:App:App");
 
@@ -46,6 +47,7 @@ function App() {
           <Route path="/userprofile2" element={<UserProfilePage2/>}/>
           <Route path="/usrprofile/:userid" element={<PlannerPage/>}/>
           <Route path="/planner/:plannerId" element={<PlannerDetailPage/>}/>
+          <Route path="/userviewerpage" element={<UserViewerPage/>}/>
           <Route path="/map" element={<MapPage/>}/>
           <Route path="/new" element={<NewPage/>}/>
           <Route path="*" element={<Navigate to="/"  />} />

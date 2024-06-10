@@ -18,7 +18,7 @@ export default function CalenderPicker(){
     }
     
     return (
-        <div>
+        <div >
             <Datepicker
                 value={value}
                 onChange={handleValueChange}
