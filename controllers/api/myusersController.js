@@ -235,7 +235,7 @@ const getViewer = async (req,res) => {
     try
     {
 
-        const text = `SELECT users.id,users.name,created_at FROM users
+        const text = `SELECT users.id,users.name,created_at,users.usertype FROM users
         JOIN usersviewer ON users.id = user_id
         WHERE usersviewer.visiting_id = $1`;
         const values = [userid];
