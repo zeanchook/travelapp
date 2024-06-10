@@ -44,7 +44,7 @@ export default function PlannerPage()
 
     const [loadingSts ,setLoadingSts] = useState(false);
     const [ visitedUserState , setvisitedUserState ] = useState("")
-
+    console.log(visitedUserState)
     const [userStats ,setUserStats] = useState("")
     const currentUser = useAtomValue(loginSts)
     console.log(currentUser)
@@ -133,7 +133,8 @@ export default function PlannerPage()
         console.log(response)
 
         const [ usercheck ] = currentUser
-        setOwner(parseInt(user.id) === parseInt(usercheck.id))
+        // console.log(parseInt(user.id), parseInt(usercheck.id),visitedUser)
+        setOwner(parseInt(user.id) === parseInt(visitedUser))
         setvisitedUserState(response)
         setLoadingSts(true);
         setmyheatMap(false)
@@ -176,6 +177,13 @@ export default function PlannerPage()
   </div>)
     }
 
+    const AnotherLoading = () =>
+    {
+      return(<span className="loading loading-ball loading-lg"></span>
+      )
+    }
+
+    
     return(<div style={{ display: 'flex', height: '100vh'}}>
       <div style={{ width: '30%',
         display:"flex",flexDirection:"row",justifyContent:"end"
@@ -201,7 +209,7 @@ export default function PlannerPage()
         <div style={{height:"40%", backgroundColor: "", 
         justifyContent:"end", flexDirection:"column",
         display:"flex", alignItems:"center"}}> 
-        {visitedUserState && <HeatMap selectedPlanner={{selected : userState , type: "userheatmap"}} mapSize={{width: "35vw",height: "35vh",borderRadius:"10px"}}/>}
+        {visitedUserState && <HeatMap selectedPlanner={{selected : visitedUserState , type: "userheatmap"}} mapSize={{width: "35vw",height: "35vh",borderRadius:"10px"}}/>}
         </div>
 
 
