@@ -39,9 +39,9 @@ export default function AdminPage()
     const handlePromotion = async(updatedUserList,user) =>
     {
       setuserList(updatedUserList)
-      console.log(updatedUserList,user)
-      const resposne = await updateUserLevel(user)
-      console.log(resposne)
+      // console.log(updatedUserList,user)
+      await updateUserLevel(user)
+      // console.log(resposne)
 
     }
     
@@ -55,23 +55,23 @@ export default function AdminPage()
                 let value = entry[1];
                 return ob1.push(value.id)
             });
-        console.log(userList)
-        console.log(ob1)
-        console.log(ob1.includes([1,2]))
+        // console.log(userList)
+        // console.log(ob1)
+        // console.log(ob1.includes([1,2]))
         const updateList = userList.filter(item => !ob1.includes(item.id))
         // console.log(updateList)
         setuserList(updateList)
         setSelectedItem({})
-        const response = await deleteUsers(ob1)
-        console.log(response)
+        await deleteUsers(ob1)
+        // console.log(response)
         
     }
     
       
 
     return(<div style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
-    <div style={{width:"80%",height:"50vh", overflowY: 'scroll'}}>
-    <p>User Details</p>
+    <div style={{width:"80%",height:"80vh", overflowY: 'scroll',display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",alignContent:"center"}}>
+    <b>User Details</b>
     <div className="overflow-y-auto">
   <table className="table">
     {/* head */}
@@ -85,10 +85,11 @@ export default function AdminPage()
         <th>Name</th>
         <th>User Type</th>
         <th>🌎 HeatMap Points</th>
+        <th>🌟 Sign Up Date</th>
         <th></th>
       </tr>
     </thead>
-    <tbody>
+    <tbody style={{textAlign: "center"}}>
       <Rows userList={userList} handleSelection={handleSelection} handlePromotion={handlePromotion} selectedItem={selectedItem}/>
     </tbody>
   </table>

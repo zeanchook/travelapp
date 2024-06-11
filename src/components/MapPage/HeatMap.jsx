@@ -19,7 +19,7 @@ export default function HeatMap({selectedPlanner, mapSize}) {
   const mapRef = useRef(null);
 // console.log(myVariable)
 const [resultss,setResults] = useState("")
-const [mapStyle, setMapStyle] = useState("")
+
 console.log(selectedPlanner)
 // console.log(resultss)
 
@@ -44,7 +44,7 @@ const views = [{latitude: 6, longitude: -104.18},
   const [viewState , setViewState] = useState(views[1])
 console.log(views[0])
 const tier = useAtomValue(tiers)
-console.log(tier[3]?.feature[1].style)
+// console.log(tier[3]?.feature[1].style)
 const findindex = tier.findIndex(item => item.name === currentUser?.usertype)
 
 useEffect(() => {
@@ -59,6 +59,7 @@ useEffect(() => {
   return () => clearInterval(interval);
 }, [viewState, views]);
 
+const [mapStyle, setMapStyle] = useState(tier[findindex].feature[0].style)
 
 
 {/* 6.1722374,104.1825985
@@ -98,7 +99,7 @@ useEffect(() => {
     }
   }
   }
-
+console.log(mapStyle)
 console.log(selectedPlanner)
   if(selectedPlanner)
   {
@@ -121,7 +122,7 @@ console.log(selectedPlanner)
 
 const onSelectCity = React.useCallback(({longitude, latitude},zoomlevel) => {
   console.log(longitude, latitude)
-  mapRef.current?.flyTo({center: [longitude, latitude], duration: 20000, zoom: zoomlevel});
+  mapRef.current?.flyTo({center: [longitude, latitude], duration: 18000, zoom: zoomlevel});
 }, []);
 
 onSelectCity(viewState,0.5)

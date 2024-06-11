@@ -48,7 +48,7 @@ export default function MarkerMap({mapSize, mapData}) {
   console.log(findindex)
 console.log(tier[findindex])
 
-const [mapStyle, setMapStyle] = useState("")
+const [mapStyle, setMapStyle] = useState(tier[findindex].feature[0].style)
 
   // const [data , setData] = useState([])
   const mapRef = useRef(null);

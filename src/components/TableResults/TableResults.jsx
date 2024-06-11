@@ -163,11 +163,11 @@ export default function TableResults({plannerList, setPlannerList,setheatMapDisp
             
             </div>)
     })
-    return(<div style={{display:'flex',flexDirection:"column",alignItems:"center"}}>
-        {owner ? <b style={{fontSize:"20px",padding:"20px"}}>Your Plans 📒</b> :
+    return(<div style={{display:'flex',flexDirection:"column",alignItems:"center", }}>
+        {owner ? <b style={{fontSize:"20px",padding:"20px",}}>Your Plans 📒</b> :
         <b style={{fontSize:"20px",padding:"20px"}}>{plannerOwner?.name+"'s "} Plans 📒</b>
         }
-        <div style={{backgroundColor:"",display:"flex",flexWrap:"wrap"}}>
+        <div style={{backgroundColor:"",display:"flex",flexWrap:"wrap",}}>
             <MyData/>
         </div>
     </div>

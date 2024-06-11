@@ -20,7 +20,7 @@ const selection = {
 }
 
 const textStyle = {
-  fontSize: 9,
+  fontSize: 8,
   fontWeight: 'bold',
   fill: '#fff',
   textAlign: 'center',
@@ -32,7 +32,7 @@ function Pin({size = 25, index, type}) {
   return (
     <svg height={size} viewBox="0 0 24 24" style={selection[type]}>
       <path d={ICON} />
-      {(type !== "select") && <text x="5" y="14" style={textStyle}>{index + 1}</text>}
+      {(type !== "select" && type !== "POST") && <text x="9" y="14" style={textStyle}>{index + 1}</text>}
     </svg>
   );
 }
