@@ -239,7 +239,8 @@ const handleDropNoItem = async(e,item) =>
     
 }
 
-const Filtering = ({date}) => {
+const Filtering = (date) => {
+    // console.log(datte)
     let filteredItems = plannerItem  && plannerItem?.filter(item => item.date === date).sort((a,b) => 
     {
     if(a.plannerlocationitemsid > b.plannerlocationitemsid)
@@ -260,7 +261,9 @@ const Filtering = ({date}) => {
         // console.log("here?",filteredItems)
       return filteredItems?.map((item,idx) => 
      
-      <li className="mb-10 ms-4 " key={idx} style={{backgroundColor:"", display:"flex", justifyContent:"space-between"}}>
+      <li className="mb-10 ms-4 " key={idx} 
+      style={{backgroundColor:"", display:"flex", 
+      justifyContent:"space-between",color:"#2F3C7E",margin:"2px"}}>
            <div style={{display:"flex",alignItems:"center"}}
             draggable={validate} value={item}
             onDragStart={(e)=> handleDrag(e,item)} 
@@ -285,17 +288,17 @@ const Filtering = ({date}) => {
     
     else {
         return (
-            <div 
+            <p 
             onDrop={(e)=>handleDropNoItem(e,date, "dropnoitem")} 
             onDragOver={handleDragOver}
-            style={{backgroundColor:"green",padding:"20px"}}>
-        <li className="mb-10 ms-4" >
-        <div className="absolute w-3 h-3 bg-orange-200 rounded-full 
+            style={{backgroundColor:"",margin:"2px"}}>
+        {/* <li className="mb-10 ms-4" > */}
+        {/* <div className="absolute w-3 h-3 bg-orange-200 rounded-full 
         mt-1.5 -start-1.5 border border-white dark:border-black-900 dark:bg-black-700"
-        ></div>
-        <div>No items here yet </div>
-        </li>
-        </div>
+        ></div> */}
+        <div style={{padding:"2px"}}>No items here yet </div>
+        {/* </li> */}
+        </p>
         );
     }
 }
@@ -390,40 +393,56 @@ const Filtering = ({date}) => {
         setmarkerDirection(item)
     }
 
-    const List = () => plannerDetails?.map((item,idx) =>
+    const handleClicker = (e) =>
+    {
+        console.log(e.target.classList)
+    }
+
+    const List = plannerDetails && plannerDetails?.map((item,idx) =>
         {
-            return(<div className="mb-10 ms-4" key={idx} style={{backgroundColor:"yellow",padding:"20px",cursor:"pointer"}}
+            return(<div className="mb-10 ms-4" key={idx} style={{backgroundColor:"gold",padding:"20px",cursor:"pointer",borderRadius:"10px"}}
             onDrop={(e)=>handleDropDay(e, item, "dropday")}
             onDragOver={handleDragOver}
             onClick={(e) => handleCurrentDay(e,item)}
             >
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.locations}</h3>
-            <p className="mb-4 text-base font-normal text-black-500 dark:text-black-400">
-                
-                {` Day ${idx+1}`}   {dayjs(item.date).format("ddd,DD/MMM/YY")}
-            </p>
-                <ol className="relative" >                  
-                   {Filtering && <Filtering date={item.date}/>}
+            {/* <p className="mb-4 text-base font-normal text-black-500 dark:text-black-400"> */}
+            <div tabIndex={0} className={`collapse collapse-open border border-base-300 bg-base-200`}
+            >
+            <div className="collapse-title text-xl font-medium"
+             style={{display:"flex",alignItems:"flex-end",
+             backgroundColor:"#101820",color:"#FEE715"}}>
+                {` Day ${idx+1}`}   
+                <p className="italic text-xs px-2">{dayjs(item.date).format("dddd , DD-MMM-YY")}</p>
+                </div>
+            {/* </p> */}
+                {/* <ol className="relative" >                   */}
+                <div className="collapse-content" style={{backgroundColor:"#FBEAEB"}}> 
+                   {Filtering(item.date)}
                    {/* {Filtering && <Filtering date={item.date}/>} */}
-                </ol>
+                   </div>
+                {/* </ol> */}
+                </div>
             </div>)
         })
+
+        
 
     return( 
     <div style={{ display: 'flex', height: '100vh' }}>
     {/* <div style={{display:"flex",flexDirection:"row",backgroundColor:"yellow"}}> */}
     
     <div style={{ width: '50%', overflowY: 'scroll', padding: "10px", display:"flex", flexDirection: "column",background:'url("https://i.redd.it/uwmhyzndzusc1.jpeg")', backgroundSize:"cover",}}>
-    <h1 style={{fontSize:"25px", backgroundColor:"grey"}} onClick={handleOverview}
+    <h1 style={{fontSize:"35px", backgroundColor:"", margin:"10px"}} onClick={handleOverview} className="font-mono"
     >{plannerDetails && plannerDetails[0]?.title}</h1>
     <div>{plannerDetails &&          
-       <List/>
+       List
    }</div>
     </div>
 
     <div style={{ width: '50%'}}>        
         <div style={{height:"47.5%",backgroundColor: '',overflowY: 'scroll', display:"flex", flexDirection:"column",alignItems:"center",
-        background:'url("https://i.redd.it/1z4cz088dgqc1.jpeg")', backgroundSize:"cover",
+        background:'url("https://i.redd.it/vzgduzr6on3d1.png")', backgroundSize:"cover",
         }}>
         <SearchPlaces plannerDetails={plannerDetails} 
         handleSelect={handleSelect} 
