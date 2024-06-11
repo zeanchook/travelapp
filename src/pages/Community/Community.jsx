@@ -135,7 +135,7 @@ export default function Community()
       }).map((item,idx) =>
         {
             return(
-            <div key={idx} style={{backgroundColor:"",width:"600px",padding:"10px"}}>
+            <div key={idx} style={{backgroundColor:"",width:"750px",padding:"10px"}}>
               <div className="stats shadow"  style={{margin:"10px",display:'flex',
               flexDirection:"column",alignItems:"center",justifyContent:"center",backgroundColor:"white"}} >
                 <div className="stat" style={{display:'flex',alignItems:"center"}}>
@@ -154,8 +154,10 @@ export default function Community()
               >created 📍 <b>{item.title}</b> with <b>{item.data.length+" locations innit "}</b>  {" on "+dayjs(item.created_at).format('DD-MMM-YY')}</div>
              
             </div>
-           <div style={{margin:"10px",marginBottom:"20px"}}>
-                      <MarkerMap mapSize={{width: "25vw",height: "30vh"}} mapData={{selected : item , type: "POST"}}/>
+           <div style={{margin:"10px",marginBottom:"20px",width:"100%",backgroundColor:"",
+            display:"flex",alignItems:"center",flexDirection:"column"
+            }}>
+                      <MarkerMap mapSize={{width: "35vw",height: "35vh"}} mapData={{selected : item , type: "POST"}}/>
            </div>
           
           </div>
