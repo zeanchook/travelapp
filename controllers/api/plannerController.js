@@ -45,20 +45,7 @@ const create = async (req,res) => {
             WHERE p.plannerid=$1`,
             values:[plannerItems.plannerid]}
 
-        const plannerItemsQueryResponse = await pool.query(query);
-        // console.log(plannerItemsQueryResponse)
-
-
-        //return all items that just created 
-
-
-        // const [responseResult] = response.rows
-        // const { id } = responseResult
-        // console.log(id)
-        // const plannerQuery = "INSERT INTO planner (user_id, title) VALUES ($1, $2) RETURNING title,created_at"
-        // const plannerValues = [id,item]
-        // const plannerResponse = await pool.query(plannerQuery,plannerValues);
-        // console.log("my new planenr id is ",plannerItems.plannerid)
+        await pool.query(query);
         res.status(201).json(plannerItems.plannerid);
     }
     catch(error)
@@ -81,19 +68,15 @@ const index = async (req,res) => {
     const { name } = user
     console.log(name)
     
-    // JOIN planner_items ON planner_items.planner_id = planner.id
     try
     {
 
-        //update total location before query
-
-        
+        //update total location before query        
         const text = `SELECT * FROM users
         JOIN planner ON users.id = planner.user_id
         WHERE users.name = $1`;
         const values = [visitedUser.name];
         const response = await pool.query(text,values);
-        // console.log("this is the response", response.rows)
         console.log(response.rows.length)
         res.status(201).json(response.rows);
        
@@ -120,8 +103,6 @@ const getDetails = async (req,res) => {
     const [ user ] = currentUser
     const { name } = user
     console.log(name)
-    
-    // // JOIN planner_items ON planner_items.planner_id = planner.id
     try
     {
         
@@ -130,18 +111,15 @@ const getDetails = async (req,res) => {
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         WHERE planner_items.planner_id=$1`;
         const values = [id];
-        // WHERE users.name=$1 AND planner_items.planner_id=$2`;
-        // const values = [name,id];
         const response = await pool.query(text,values);
-        console.log("this is the response", response.rows)
-        // console.log(response.rows.length)
+        // console.log("this is the response", response.rows)
         res.status(201).json(response.rows);
        
     }
     catch(error)
     {
         // debug("error: %o", error);
-        console.log(error)
+        // console.log(error)
         res.status(500).json( {error: error.detail} );
     }
 };
@@ -157,9 +135,9 @@ const getEachDetails = async(req,res) =>
 
     const currentUser = getUser(req, res);
     const [ user ] = currentUser
-    const { name } = user
-    console.log(name)
-    
+    // const { name } = user
+    // console.log(name)
+
     // // JOIN planner_items ON planner_items.planner_id = planner.id
     try
     {
@@ -180,45 +158,10 @@ const getEachDetails = async(req,res) =>
     }
     catch(error)
     {
-        // debug("error: %o", error);
         console.log(error)
         res.status(500).json( {error: error.detail} );
     }
 }
-
-// const verification = async(req,res,next) =>
-// {
-//     const pool = new Pool({
-//         connectionString,
-//         });
-
-//     const currentUser = getUser(req, res);
-//     const [ user ] = currentUser
-//     const { name } = user
-//     console.log(name)
-    
-//     try
-//     {
-        
-//         const text = `SELECT * FROM users
-//         JOIN planner ON users.id = planner.user_id
-//         WHERE users.name = $1`;
-//         const values = ["s"];
-//         const response = await pool.query(text,values);
-//         console.log("this is the response", response.rows)
-//         next();
-//         // console.log(response.rows.length)
-//         // res.status(201).json(response.rows);
-       
-//     }
-//     catch(error)
-//     {
-//         // debug("error: %o", error);
-//         console.log(error)
-//         res.status(500).json( {error: error.detail} );
-//     }
-// }
-
 
 const addtoItinerary = async (req,res) => {
 
@@ -232,13 +175,7 @@ const addtoItinerary = async (req,res) => {
     const pool = new Pool({
         connectionString,
         });
-console.log(plannerId)
-    // const currentUser = getUser(req, res);
-    // const [ user ] = currentUser
-    // const { name } = user
-    // console.log(name)
-    
-    // // JOIN planner_items ON planner_items.planner_id = planner.id
+
     try
     {
         
@@ -246,10 +183,7 @@ console.log(plannerId)
         const values1 = [parseInt(planner_items_id), name, locations];
         const response1 = await pool.query(text1,values1);
 
-        console.log("this is the response", response1.rows)
-
-
-
+        // console.log("this is the response", response1.rows)
         const text2 = `SELECT coverphoto FROM planner
         WHERE plannerid = $1`;
         const values2 = [plannerId];
@@ -557,8 +491,6 @@ const testing = async (req,res) => {
     const pool = new Pool({
         connectionString,
         });
-
-        // JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
     try
     {
         
@@ -586,7 +518,6 @@ module.exports = {
     create,
     index,
     getDetails,
-    // verification,
     addtoItinerary,
     testing,
     getEachDetails,
