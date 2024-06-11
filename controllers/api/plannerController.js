@@ -34,8 +34,8 @@ const create = async (req,res) => {
         const plannerValues = [id, title, startDate , endDate , daysLength, "Planned"]
         const plannerResponse = await pool.query(plannerQuery,plannerValues);
         const [ plannerItems ] = plannerResponse.rows
-        console.log(plannerItems.id)
-        console.log(plannerItems)
+        console.log("37",plannerItems.plannerid)
+        console.log("38",plannerItems)
 
         //creating planner_items
         const query = {text: 
@@ -46,7 +46,7 @@ const create = async (req,res) => {
             values:[plannerItems.plannerid]}
 
         const plannerItemsQueryResponse = await pool.query(query);
-        console.log(plannerItemsQueryResponse)
+        // console.log(plannerItemsQueryResponse)
 
 
         //return all items that just created 
