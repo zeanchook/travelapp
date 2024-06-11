@@ -3,12 +3,14 @@ import { useAtomValue } from "jotai"
 import { useEffect, useState } from "react"
 import { deleteUsers, getAllUsers, updateUserLevel } from "../../utilities/users-service"
 import Rows from "./Component/Rows"
+import LoadingPopup2 from "../../components/LoadingPopup/LoadingPopup2"
 
 export default function AdminPage()
 {
     const [currentUser] = useAtomValue(loginSts)
     const [selectedItem , setSelectedItem] = useState({})
     console.log(currentUser)
+    const [loadingMsg2, setLoadingMsg2 ] = useState(false)
 
 
     const optionDisplay = (Object.keys(selectedItem).length)
@@ -17,9 +19,11 @@ export default function AdminPage()
 
     useEffect(() => {
         async function getUser() {
+          setLoadingMsg2(true)
           const response  = await getAllUsers()
           console.log(response)
           setuserList(response)
+          setLoadingMsg2(false)
         }
         getUser();
       }, []);
@@ -100,7 +104,7 @@ export default function AdminPage()
 
 
 
-
+    {loadingMsg2 && <LoadingPopup2 msg={"Admin Page"}/>}
     <div>
     {optionDisplay !== 0 &&
         <>

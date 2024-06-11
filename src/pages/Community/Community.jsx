@@ -8,41 +8,35 @@ import { useNavigate } from "react-router-dom"
 import CalenderPicker from "../../components/CalenderPicker/CalenderPicker"
 import { ToastContainer, toast } from 'react-toastify';
 import LoadingPopup from "../../components/LoadingPopup/LoadingPopup"
+import LoadingPopup2 from "../../components/LoadingPopup/LoadingPopup2"
 
 
 export default function Community()
 {
-    const [user] = useAtomValue(loginSts)
+    const isLoggedIn = useAtomValue(loginSts)
+    let user = "" 
+    if (isLoggedIn !== null)
+    {
+      [user] = isLoggedIn;
+    }
+
     const [post , setPost] = useState("")
-
     const [createDisplay , setcreateDisplay] = useState(true)
-
-  const [loadingMsg, setLoadingMsg ] = useState(false)
-
+    const [loadingMsg, setLoadingMsg ] = useState(false)
+    const [loadingMsg2, setLoadingMsg2 ] = useState(false)
     const [newForm, setnewForm] = useState(false);
     const dateValue = useAtomValue(currentSelectedRange);
     const [formValue , setFormValue] = useState("")
-
     const inputEl = useRef("");
-
     const numDays = parseInt(dayjs(dateValue.endDate).format('DD/MM/YYYY'))-parseInt(dayjs(dateValue.startDate).format('DD/MM/YYYY'));
-
-
     const navigate = useNavigate();
-
-    // console.log("dateValue",dateValue)
-
-    // console.log(user)
 
     useEffect(() => {
 
        async function getPost()
        {
-            const resposne = await getStats();
-            // console.log(resposne)
-
-        //    const reducedData = {}
-           
+            setLoadingMsg2(true)
+           const resposne = await getStats();           
            const reducedData = await resposne.reduce((acc, current) => {
             const existingPlanner = acc.find(planner => planner.planner_id === current.planner_id);
             if (!existingPlanner) {
@@ -71,38 +65,39 @@ export default function Community()
               }
               return acc;
           }, []);
-              
-            
-            // console.log(reducedData)
             setPost(reducedData)
+            setLoadingMsg2(false)
        }
        getPost()
       }, []);
 
       const handleClick = (e,item) =>
       {
-        // console.log(item.planner_id)
         navigate(`/planner/${item.planner_id}`)
       }
 
       const handleUserClick = (e,item) =>
       {
-        // console.log(item)
         navigate(`/usrprofile/${item.userid}`)
       }
 
       const handleCreatePlanner = () =>
       {
-          setnewForm(true)
-          setcreateDisplay(false)
+          console.log(user)
+          if(user)
+          {
+            setnewForm(true)
+            setcreateDisplay(false)
+          }
+          else
+          {
+          navigate("/auth")
+          }
+
       }
 
       const handleChange = (e) =>
     {
-      // e.preventDefault();
-      // e.stopPropagation();
-      // console.log(inputEl.current)
-      // // setFormValue(e.target.value)
       inputEl.current = e.target.value
     }
 
@@ -110,16 +105,10 @@ export default function Community()
     {
       e.preventDefault();
       e.stopPropagation();
-      // console.log(formValue)
-
-      // console.log(inputEl.current)
-      // console.log({...dateValue,...formValue})
       if(dateValue.default === "no")
       {
         setLoadingMsg(true)
         const result = await createPlanner({...dateValue,title: inputEl.current,daysLength:numDays})
-        // console.log(result)
-        console.log(result)
         navigate(`/planner/${result}`)
         setLoadingMsg(false)
       }
@@ -127,14 +116,6 @@ export default function Community()
       {
         toast("Planner not created as date is default !");
         }
-     
-      // if(typeof(result) === "string")
-      // {
-      //   toast(result)
-      // }
-      // else{
-      //   toast(`${formValue} created succesfully !`)
-      // }
     }
 
       const Post = post && post?.sort((b,a) => 
@@ -153,7 +134,6 @@ export default function Community()
           }
       }).map((item,idx) =>
         {
-          // console.log(item)
             return(
             <div key={idx} style={{backgroundColor:"",width:"600px",padding:"10px"}}>
               <div className="stats shadow"  style={{margin:"10px",display:'flex',
@@ -167,8 +147,6 @@ export default function Community()
                     <div className="stat-title" style={{}}
                     
                     ><b>{item.name}</b></div>
-                    {/* <div className="stat-title">{dayjs(item.created_at).format('DD-MMM-YY')}{dayjs().format('DD-MMM-YY') }</div> */}
-                    {/* <div className="text-xs">{dayjs(item.created_at).format('DD-MMM-YY')}</div> */}
                   </div>
 
               <div className="stat-title" style={{cursor:"pointer"}}
@@ -185,15 +163,10 @@ export default function Community()
          
           </div>)
         })
-    //   console.log(post)
     return(<div style={{ display: 'flex', height: '100vh', 
     flexDirection:"column", backgroundColor:"yellow", alignItems:"center" ,
     background:'url("https://i.redd.it/10e6ttd0fp4d1.jpeg")', backgroundSize:"cover"
-    ,overflowY:"scroll"}}>
-
-        {/* <img src="https://parade.com/.image/t_share/MTk3MDMzODkyNzE1MTc3Mjc5/how-long-does-it-take-to-get-to-the-moon.jpg"/> */}
-
-   
+    ,overflowY:"scroll"}}>   
       <div style={{padding:"40px"}}><b style={{color:"white",fontSize:"50px"}}>Explore Our Community </b></div>
       <div className="divider" style={{color:"white",borderColor:"white"}}>OR</div>
       {createDisplay && <div className="p-4 border-t mx-8 mt-2">
@@ -239,5 +212,6 @@ export default function Community()
         </div>
         <ToastContainer />
         {loadingMsg && <LoadingPopup/>}
+        {loadingMsg2 && <LoadingPopup2/>}
     </div>)
 }

@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { getViewer } from "../../utilities/users-service";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import LoadingPopup2 from "../../components/LoadingPopup/LoadingPopup2";
 
 export default function UserViewerPage()
 {
     const [user] = useAtomValue(loginSts)
-    console.log(user)
     const [viewers, setViewers] = useState("")
+    const [loadingMsg2, setLoadingMsg2 ] = useState(false)
 
     const navigate = useNavigate();
 
@@ -18,13 +19,15 @@ export default function UserViewerPage()
         
         async function getUserViewer(id)
         {
+          setLoadingMsg2(true)
+          
             const response = await getViewer({userid:id})
             if(!ignore){
                 setViewers(response)
             }
+            setLoadingMsg2(false)
         }
   
-        
         if(user)
         {
             getUserViewer(user.id);
@@ -33,7 +36,7 @@ export default function UserViewerPage()
   
         return () => {ignore = true;};
       }, [user]);
-console.log(viewers)
+
 
 const handleUserClick = (e,item) =>
 {
@@ -68,6 +71,7 @@ const TableData = () => viewers && viewers.map((item,idx) =>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-neutral-700">
         <TableData/>
+        {loadingMsg2 && <LoadingPopup2 msg={"your viewers"}/>}
       </tbody>
     </table>
     </div>
