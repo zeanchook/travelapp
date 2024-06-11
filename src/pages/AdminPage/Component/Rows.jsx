@@ -3,15 +3,26 @@ import { getStats } from "../../../utilities/planner-service";
 import { produce } from "immer";
 import { tiers } from "../../../../atom";
 import { useAtomValue } from "jotai";
+import dayjs from "dayjs";
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+import { useNavigate } from "react-router-dom";
+
+
 
 export default function Rows({userList, handleSelection, selectedItem, handlePromotion})
 {
     const [userStatsDetail, setUserStatsDetail] = useState("")
-    
+    const navigate = useNavigate();
     const tiersState = useAtomValue(tiers)
     
 
     console.log(userList)
+
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+console.log(dayjs('2021-08-09 15:45:55 UTC').tz("Africa/Lagos"))
+
 
     useEffect(() => {
         async function getUser() {
@@ -74,10 +85,16 @@ export default function Rows({userList, handleSelection, selectedItem, handlePro
       
     }
 
+    const handleClick = (e,item) =>
+    {
+      // console.log(item)
+      navigate(`/usrprofile/${item.id}`)
+    }
+
     console.log(userStatsDetail)
     const Rows = () => userList && userList?.map((item,idx) => 
         {
-            return(<tr key={idx}>
+            return(<tr key={idx} style={{textAlign: "center"}} >
                 <th>
                   <label>
                     <input type="checkbox" className="checkbox" 
@@ -94,13 +111,13 @@ export default function Rows({userList, handleSelection, selectedItem, handlePro
                         alt="Avatar Tailwind CSS Component" />
                       </div>
                     </div>
-                    <div>
-                      <div className="font-bold">{item.name}</div>
-                      <div className="text-sm opacity-50">United States</div>
+                    <div >
+                      <div className="font-bold" style={{cursor:"pointer"}} onClick={(e) => handleClick(e,item)}>{item.name}</div>
+                      {/* <div className="text-sm opacity-50">{item.views}</div> */}
                     </div>
                   </div>
                 </td>
-                <td>
+                <td >
                   <div style={{display:"flex",flexDirection:"row",alignItems:"center"}}>
                  {(item.usertype !== "admin" && item.usertype !== "stone") ? <button value="-1" onClick={(e) => handlePromo(e,item)}>🔻</button> : ""}
                   <span className="badge badge-ghost badge-sm">{item.usertype}</span>
@@ -114,7 +131,9 @@ export default function Rows({userList, handleSelection, selectedItem, handlePro
                       </span>
                     </td>
                 <th>
-                  <button className="btn btn-ghost btn-xs">Details</button>
+                  {/* <button className="btn btn-ghost btn-xs">{dayjs(item.created_at).format("DD MMM YY, hh mm a")}</button> */}
+                  <button className="btn btn-ghost btn-xs">{dayjs(item.created_at).tz("Singapore").format("DD MMM YYYY hh mm a")}</button>
+                  {/*  */}
                 </th>
               </tr>)
         })

@@ -413,7 +413,7 @@ const Filtering = ({date}) => {
     <div style={{ display: 'flex', height: '100vh' }}>
     {/* <div style={{display:"flex",flexDirection:"row",backgroundColor:"yellow"}}> */}
     
-    <div style={{ width: '50%', overflowY: 'scroll', padding: "10px", display:"flex", flexDirection: "column"}}>
+    <div style={{ width: '50%', overflowY: 'scroll', padding: "10px", display:"flex", flexDirection: "column",background:'url("https://i.redd.it/uwmhyzndzusc1.jpeg")', backgroundSize:"cover",}}>
     <h1 style={{fontSize:"25px", backgroundColor:"grey"}} onClick={handleOverview}
     >{plannerDetails && plannerDetails[0]?.title}</h1>
     <div>{plannerDetails &&          
@@ -422,7 +422,9 @@ const Filtering = ({date}) => {
     </div>
 
     <div style={{ width: '50%'}}>        
-        <div style={{height:"47.5%",backgroundColor: 'grey',overflowY: 'scroll', display:"flex", flexDirection:"column",alignItems:"center"}}>
+        <div style={{height:"47.5%",backgroundColor: '',overflowY: 'scroll', display:"flex", flexDirection:"column",alignItems:"center",
+        background:'url("https://i.redd.it/1z4cz088dgqc1.jpeg")', backgroundSize:"cover",
+        }}>
         <SearchPlaces plannerDetails={plannerDetails} 
         handleSelect={handleSelect} 
         handleSearch={handleSearch}

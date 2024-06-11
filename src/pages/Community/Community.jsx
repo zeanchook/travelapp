@@ -108,8 +108,8 @@ export default function Community()
 
     const handleSubmit = async(e) =>
     {
-      // e.preventDefault();
-      // e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
       // console.log(formValue)
 
       // console.log(inputEl.current)
@@ -119,8 +119,9 @@ export default function Community()
         setLoadingMsg(true)
         const result = await createPlanner({...dateValue,title: inputEl.current,daysLength:numDays})
         // console.log(result)
-        setLoadingMsg(false)
+        console.log(result)
         navigate(`/planner/${result}`)
+        setLoadingMsg(false)
       }
       else
       {

@@ -184,13 +184,15 @@ export default function PlannerPage()
     }
 
     
-    return(<div style={{ display: 'flex', height: '100vh'}}>
+    return(<div style={{ display: 'flex', height: '100vh',
+    background:'url("https://i.redd.it/uwmhyzndzusc1.jpeg")', backgroundSize:"cover", 
+      }}>
       <div style={{ width: '30%',
         display:"flex",flexDirection:"row",justifyContent:"end"
       ,backgroundColor:""
       }}>
         
-        {/* <div style={{display:'flex',background:"red", justifyContent:"right",flexDirection:"row"}}> */}
+
         <div>
           {visitedUserState && <UserCard 
           currentUser={visitedUserState} 
