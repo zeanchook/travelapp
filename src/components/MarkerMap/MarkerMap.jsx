@@ -11,7 +11,6 @@ import ControlPanel from './ControlPanel';
 
 
 // import {MapRef} from 'react-map-gl';
-
 // import {myVariable} from "./datatest"
 import Map, {
   Marker,
@@ -23,8 +22,6 @@ import Map, {
 } from 'react-map-gl';
 
 // import { MapRef } from 'react-map-gl/dist/esm/mapbox/create-ref';
-
-
 // import ControlPanel from './control-panel';
 import Pin from './pin';
 import { markerService, processData } from './markermap-service';
@@ -37,18 +34,20 @@ const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN;
 export default function MarkerMap({mapSize, mapData}) {
   const [popupInfo, setPopupInfo] = useState(null);
 
-  const [currentUser] = useAtomValue(loginSts)
+  // const [currentUser] = useAtomValue(loginSts)
+  const isLoggedIn = useAtomValue(loginSts)
+  let currentUser = "" 
+  if (isLoggedIn !== null)
+  {
+    [currentUser] = isLoggedIn;
+  }
   const tier = useAtomValue(tiers)
   console.log(tier)
 
   const usertype = currentUser?.usertype
-  console.log(usertype)
-
-  const findindex = tier.findIndex(item => item.name === usertype)
-  console.log(findindex)
-console.log(tier[findindex])
-
-const [mapStyle, setMapStyle] = useState(tier[findindex].feature[0].style)
+  let findindex = tier.findIndex(item => item.name === usertype)
+  findindex === -1 ? findindex = 0 : findindex 
+  const [mapStyle, setMapStyle] = useState(tier[findindex].feature[0].style)
 
   // const [data , setData] = useState([])
   const mapRef = useRef(null);

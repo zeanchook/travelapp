@@ -20,6 +20,8 @@ import NewPage from "../NewPage";
 import UserProfilePage2 from "../UserProfilePage2/UserProfilePage2";
 import AdminPage from "../AdminPage/AdminPage";
 import UserViewerPage from "../UserViewerPage/UserViewerPage";
+import Auth from "../../components/Auth/Auth";
+
 
 const log = debug("mern:pages:App:App");
 
@@ -28,13 +30,13 @@ function App() {
   const user = useAtomValue(loginSts)
   log("user %o", user);
 
-  if (!user) {
-    return (
-      <main >
-        <AuthPage  />
-      </main>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <main >
+  //       <AuthPage  />
+  //     </main>
+  //   );
+  // }
   // console.log(user)
   return (
     <div>
@@ -43,25 +45,19 @@ function App() {
         
         
         <Routes>
-          <Route path="/userprofile" element={<UserProfilePage/>}/>
-          <Route path="/userprofile2" element={<UserProfilePage2/>}/>
-          <Route path="/usrprofile/:userid" element={<PlannerPage/>}/>
-          <Route path="/planner/:plannerId" element={<PlannerDetailPage/>}/>
-          <Route path="/userviewerpage" element={<UserViewerPage/>}/>
-          <Route path="/map" element={<MapPage/>}/>
-          <Route path="/new" element={<NewPage/>}/>
-          <Route path="*" element={<Navigate to="/"  />} />
-          <Route path="/admin" element={<AdminPage/>}/>
+          {/* <Route path="/userprofile" element={<UserProfilePage/>}/> */}
+          {/* <Route path="/userprofile2" element={<UserProfilePage2/>}/> */}
+                    {/* <Route path="/new" element={<NewPage/>}/> */}
+                              {/* <Route path="/map" element={<MapPage/>}/> */}
+          <Route path="/usrprofile/:userid" element={<Auth><PlannerPage/></Auth>}/>
+          <Route path="/planner/:plannerId" element={<Auth><PlannerDetailPage/></Auth>}/>
+          <Route path="/auth" element={<Auth><AuthPage/></Auth>}/>
+          <Route path="/admin" element={<Auth><AdminPage/></Auth>}/>
+          <Route path="/userviewerpage" element={<Auth><UserViewerPage/></Auth>}/>
+          
           <Route path="/" element={<Community/>}/>
-          {/* <Route path="/useredit" element={<OrderHistoryPage />} />
-          <Route path="/orders/new" element={<NewOrderPage />} />
-
-          <Route path="/orders2" element={<OrderHistoryPage />}>
-            <Route path="new" element={<NewOrderPage />} />
-            <Route path="simon" element={<p>Simon</p>} /> */}
-          {/* </Route> */}
+          <Route path="*" element={<Navigate to="/"  />} />
         </Routes>
-      {/* </div> */}
     </div>
   );
 }
