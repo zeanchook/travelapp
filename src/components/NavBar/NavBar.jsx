@@ -27,7 +27,7 @@ export default function NavBar() {
   return (
 <div className="navbar bg-base-300 rounded-box">
   <div className="flex-1 px-2 lg:flex-none">
-    <a className="text-lg font-bold">TRAAPP</a>
+    <a className="text-lg font-bold">TRAAPP </a>
   </div> 
   <div className="flex justify-end flex-1 px-2">
     <div className="flex items-stretch">

@@ -135,7 +135,7 @@ export default function Community()
       }).map((item,idx) =>
         {
             return(
-            <div key={idx} style={{backgroundColor:"",width:"750px",padding:"10px"}}>
+            <div key={idx} style={{backgroundColor:"",width:"100%",padding:"5px"}}>
               <div className="stats shadow"  style={{margin:"10px",display:'flex',
               flexDirection:"column",alignItems:"center",justifyContent:"center",backgroundColor:"white"}} >
                 <div className="stat" style={{display:'flex',alignItems:"center"}}>
@@ -154,10 +154,10 @@ export default function Community()
               >created 📍 <b>{item.title}</b> with <b>{item.data.length+" locations innit "}</b>  {" on "+dayjs(item.created_at).format('DD-MMM-YY')}</div>
              
             </div>
-           <div style={{margin:"10px",marginBottom:"20px",width:"100%",backgroundColor:"",
+           <div style={{margin:"10px",marginBottom:"20px",width:"95%",backgroundColor:"",borderColor:"white",
             display:"flex",alignItems:"center",flexDirection:"column"
             }}>
-                      <MarkerMap mapSize={{width: "35vw",height: "35vh"}} mapData={{selected : item , type: "POST"}}/>
+                      <MarkerMap mapSize={{width: "30vw",height: "30vh"}} mapData={{selected : item , type: "POST"}}/>
            </div>
           
           </div>
@@ -165,7 +165,7 @@ export default function Community()
          
           </div>)
         })
-    return(<div style={{ display: 'flex', height: '100vh', 
+    return(<div style={{ display: 'flex', height: '93vh', 
     flexDirection:"column", backgroundColor:"yellow", alignItems:"center" ,
     background:'url("https://i.redd.it/10e6ttd0fp4d1.jpeg")', backgroundSize:"cover"
     ,overflowY:"scroll"}}>   
@@ -209,7 +209,7 @@ export default function Community()
         Create that planner !</button>
       </form>
         }
-        <div style={{display:"flex",flexDirection:"column",padding:"100px"}}>
+        <div style={{display:"flex",flexDirection:"column",padding:"10px"}}>
         {Post}
         </div>
         <ToastContainer />

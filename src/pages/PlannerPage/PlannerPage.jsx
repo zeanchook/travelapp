@@ -184,7 +184,7 @@ export default function PlannerPage()
     }
 
     
-    return(<div style={{ display: 'flex', height: '100vh',
+    return(<div style={{ display: 'flex', height: '93vh',
     background:'url("https://i.redd.it/uwmhyzndzusc1.jpeg")', backgroundSize:"cover", 
       }}>
       <div style={{ width: '30%',

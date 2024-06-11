@@ -39,7 +39,7 @@ export default function LoginForm({setOptions }) {
         
       <section className="bg-white dark:bg-gray-900" 
       style={{background:'url("https://i.redd.it/jmp3w2up1z0d1.jpeg")', backgroundSize:"cover", 
-      height:"100vh", display:"flex",alignItems:"center"}}>
+      height:"93vh", display:"flex",alignItems:"center"}}>
          {/* <img style={{width: "100vw",height: "100vh",background:'url("https://i.redd.it/jmp3w2up1z0d1.jpeg")', backgroundSize:"cover",zIndex:"-1",
       display:"flex"}}></img> */}
     <div className="container flex items-center justify-center px-6 mx-auto" 

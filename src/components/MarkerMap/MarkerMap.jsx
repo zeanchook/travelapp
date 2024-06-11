@@ -120,7 +120,7 @@ export default function MarkerMap({mapSize, mapData}) {
           >
                         {/* <img src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&maxheight=200&photoreference=${item.photo_reference}&key=${TOKEN}`}>
                         </img> */}
-            <div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center'}}>
+            <div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center',padding:"5px"}}>
             <div >
               {popupInfo.city}
             </div>

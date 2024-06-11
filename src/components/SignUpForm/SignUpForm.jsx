@@ -50,7 +50,7 @@ export default function SignUpForm({setOptions}){
   return (
       // <div>
       //   Sign Up
-      <div style={{width: "100vw",height: "100vh",background:'url("https://i.redd.it/jmp3w2up1z0d1.jpeg")', backgroundSize:"cover",
+      <div style={{width: "100vw",height: "93vh",background:'url("https://i.redd.it/jmp3w2up1z0d1.jpeg")', backgroundSize:"cover",
       display:"flex",alignItems:"center",}}>
        
         <form className="max-w-sm mx-auto" onSubmit={handleSubmit} style={{borderRadius:"10px",backgroundColor:"white",padding:"50px",opacity:"90%",display:'flex',flexDirection:'column'}}
@@ -92,7 +92,7 @@ export default function SignUpForm({setOptions}){
   </div>
   
 </form>
-      // </div>
+       </div>
     )
   }
 

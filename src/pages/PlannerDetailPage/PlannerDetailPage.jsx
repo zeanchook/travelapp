@@ -26,7 +26,7 @@ const pinStyle = {
 };
 
 const textStyle = {
-    fontSize: 14,
+    fontSize: 9,
     fontWeight: 'bold',
     fill: '#fff',
     textAlign: 'center',
@@ -271,10 +271,10 @@ const Filtering = (date) => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             >
-           <div>
+           <div >
             <svg className="" height={30} viewBox="0 0 24 24" style={pinStyle}>
                 <path d={ICON} />
-                <text x="7.5" y="15" style={textStyle}>{idx + 1}</text>
+                <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" style={textStyle}>{idx + 1}</text>
             </svg>
             
             </div>
@@ -429,7 +429,7 @@ const Filtering = (date) => {
         
 
     return( 
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '93vh' }}>
     {/* <div style={{display:"flex",flexDirection:"row",backgroundColor:"yellow"}}> */}
     
     <div style={{ width: '50%', overflowY: 'scroll', padding: "10px", display:"flex", flexDirection: "column",background:'url("https://i.redd.it/uwmhyzndzusc1.jpeg")', backgroundSize:"cover",}}>
@@ -441,7 +441,7 @@ const Filtering = (date) => {
     </div>
 
     <div style={{ width: '50%'}}>        
-        <div style={{height:"47.5%",backgroundColor: '',overflowY: 'scroll', display:"flex", flexDirection:"column",alignItems:"center",
+        <div style={{height:"50%",backgroundColor: '',overflowY: 'scroll', display:"flex", flexDirection:"column",alignItems:"center",
         background:'url("https://i.redd.it/vzgduzr6on3d1.png")', backgroundSize:"cover",
         }}>
         <SearchPlaces plannerDetails={plannerDetails} 

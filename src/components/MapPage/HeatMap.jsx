@@ -55,7 +55,7 @@ useEffect(() => {
     const newLongitude = viewState.longitude + 90; 
     const wrappedLongitude = (newLongitude + 180) % 360 - 180; 
     setViewState({latitude: 6, longitude: wrappedLongitude})
-  }, 10000);
+  }, 8000);
   return () => clearInterval(interval);
 }, [viewState, views]);
 
@@ -118,11 +118,11 @@ console.log(selectedPlanner)
     
   }
   return () => {ignore = true;};
-}, [selectedPlanner]);
+}, []);
 
 const onSelectCity = React.useCallback(({longitude, latitude},zoomlevel) => {
   console.log(longitude, latitude)
-  mapRef.current?.flyTo({center: [longitude, latitude], duration: 18000, zoom: zoomlevel});
+  mapRef.current?.flyTo({center: [longitude, latitude], duration: 15000, zoom: zoomlevel});
 }, []);
 
 onSelectCity(viewState,0.5)
