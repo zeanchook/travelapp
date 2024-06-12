@@ -30,7 +30,12 @@ export default function AdminPage()
 
     if (currentUser.usertype !== "admin")
     {
-        return(<h1>You're unauthorized here!</h1>)
+        return(
+        <div style={{display:"flex",justifyContent:"center",backgroundColor:"grey"}}>
+        <b style={{fontSize:"50px"}}>You're unauthorized here!
+
+          <img src="https://img.freepik.com/free-vector/401-error-unauthorized-concept-illustration_114360-1934.jpg"/>
+        </b></div>)
     }
 
 
