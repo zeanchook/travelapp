@@ -102,12 +102,62 @@ const deleteUser = async (req,res) => {
     const pool = new Pool({
         connectionString,
         });
-    const ids = req.body
-    console.log(ids)
+    const [ids] = req.body
+    // console.log(ids)
     try
     {
         
-        const text = `DELETE FROM users WHERE id = ANY($1) RETURNING *`;
+        // delete planner location items
+        const deletePLI = `DELETE from planner_location_items
+        WHERE plannerlocationitemsid IN (
+        SELECT plannerlocationitemsid FROM users
+        JOIN planner ON users.id = planner.user_id
+        JOIN planner_items ON planner_items.planner_id = planner.plannerid
+        JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
+        WHERE users.id = $1)`;
+        const deletePLIValue = [ids]
+        const deletePLIresponse = await pool.query(deletePLI,deletePLIValue);
+        console.log("deletePLIresponse",deletePLIresponse.rows)
+        // const responseResult = deletePLIresponse.rows
+        // console.log(responseResult)
+        // res.status(201).json(responseResult);
+
+        //delete planner items
+        const deletePI = `DELETE from planner_items
+        WHERE planner_items_id IN (
+        SELECT planner_items_id FROM users
+        JOIN planner ON users.id = planner.user_id
+        JOIN planner_items ON planner_items.planner_id = planner.plannerid
+        WHERE users.id = $1)`;
+        const deletePIValue = [ids]
+        const deletePIresponse = await pool.query(deletePI,deletePIValue);
+        console.log("deletePIresponse",deletePIresponse.rows)
+
+
+        //delete planner items
+        const deleteP = `DELETE from planner
+        WHERE plannerid IN (
+        SELECT plannerid FROM users
+        JOIN planner ON users.id = planner.user_id
+        WHERE users.id = $1)`;
+        const deletePValue = [ids]
+        const deletePResponse = await pool.query(deleteP,deletePValue);
+        console.log("deletePResponse",deletePResponse.rows)
+
+
+        //delete user viewers
+        const deleteUV = `DELETE from usersviewer
+        WHERE userviewid IN (
+        SELECT userviewid FROM users
+        JOIN usersviewer ON users.id = usersviewer.user_id
+        WHERE users.id = $1)`;
+        const deleteUVValue = [ids]
+        const deleteUVResponse = await pool.query(deleteUV,deleteUVValue);
+        console.log("deletePResponse",deleteUVResponse.rows)
+
+
+        // delete user
+        const text = `DELETE FROM users WHERE id = $1 RETURNING *`;
         const values = [ids]
         const response = await pool.query(text,values);
         const responseResult = response.rows
