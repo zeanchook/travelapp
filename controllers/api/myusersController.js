@@ -175,6 +175,7 @@ const deleteUser = async (req,res) => {
 
 const updateUserLevel = async (req,res) => {
     // debug("body: %o", req.body);
+    console.log("pass?")
     const pool = new Pool({
         connectionString,
         });
