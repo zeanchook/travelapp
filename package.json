@@ -25,6 +25,7 @@
     "immer": "^10.1.1",
     "jotai": "^2.8.1",
     "jsonwebtoken": "^9.0.2",
+    "lodash.debounce": "^4.0.8",
     "mapbox-gl": "^3.4.0",
     "mongoose": "^8.3.4",
     "morgan": "^1.10.0",
