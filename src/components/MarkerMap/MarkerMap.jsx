@@ -101,7 +101,7 @@ export default function MarkerMap({mapSize, mapData}) {
         initialViewState={{
           latitude: 50,
           longitude: -10,
-          zoom: 0,
+          zoom: 10,
           bearing: 0,
           pitch: 0,
         }}

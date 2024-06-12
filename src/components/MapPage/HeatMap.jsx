@@ -121,11 +121,11 @@ console.log(selectedPlanner)
 }, []);
 
 const onSelectCity = React.useCallback(({longitude, latitude},zoomlevel) => {
-  console.log(longitude, latitude)
+  // console.log(longitude, latitude)
   mapRef.current?.flyTo({center: [longitude, latitude], duration: 10000, zoom: zoomlevel});
 }, []);
 
-onSelectCity(viewState,0.5)
+onSelectCity(viewState,0.8)
   return (
     <div style={mapSize}>      
     <MapGL 

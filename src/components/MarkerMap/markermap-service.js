@@ -139,7 +139,7 @@ export const markerService = (onSelectCity,mapData,data) =>
         const sumLongitudes = data.reduce((acc, current) => acc + current.longitude, 0);
         const averageLatitude = sumLatitudes / data.length;
         const averageLongitude = sumLongitudes / data.length;
-        onSelectCity({longitude: averageLongitude, latitude: averageLatitude},15)
+        onSelectCity({longitude: averageLongitude, latitude: averageLatitude},10)
     }
     else if (mapData.type === "plannerview" && mapData.selected.length === 0)
     {

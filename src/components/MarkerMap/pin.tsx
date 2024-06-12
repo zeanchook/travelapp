@@ -15,7 +15,7 @@ const selection = {
   result: {cursor: 'pointer', fill: '#00dd51', stroke: 'none'},
   plannerview: {cursor: 'pointer', fill: '#d00', stroke: 'none'},
   POST: {cursor: 'pointer', fill: '#d00', stroke: 'none'},
-  planoverview: {cursor: 'pointer', fill: '#d00', stroke: 'none'}
+  planoverview: {cursor: 'pointer', fill: '#42e3d7', stroke: 'none'}
 
 }
 
