@@ -107,7 +107,7 @@ console.log(dayjs('2021-08-09 15:45:55 UTC').tz("Africa/Lagos"))
                   <div className="flex items-center gap-3">
                     <div className="avatar">
                       <div className="mask mask-squircle w-12 h-12">
-                        <img src="https://img.daisyui.com/tailwind-css-component-profile-2@56w.png" 
+                        <img src="https://images.twinkl.co.uk/tr/raw/upload/u/ux/earth-parents-wiki_ver_1.jpg" 
                         alt="Avatar Tailwind CSS Component" />
                       </div>
                     </div>

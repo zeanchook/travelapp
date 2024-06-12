@@ -12,7 +12,6 @@ export default function AdminPage()
     console.log(currentUser)
     const [loadingMsg2, setLoadingMsg2 ] = useState(false)
 
-
     const optionDisplay = (Object.keys(selectedItem).length)
 
     const [userList , setuserList] = useState("")
@@ -66,14 +65,16 @@ export default function AdminPage()
         // console.log(updateList)
         setuserList(updateList)
         setSelectedItem({})
-        await deleteUsers(ob1)
-        // console.log(response)
+        console.log(ob1)
+        const response = await deleteUsers(ob1)
+        console.log(response)
         
     }
     
       
 
-    return(<div style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
+    return(<div style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"
+    }}>
     <div style={{width:"80%",height:"80vh", overflowY: 'scroll',display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",alignContent:"center"}}>
     <b>User Details</b>
     <div className="overflow-y-auto">
