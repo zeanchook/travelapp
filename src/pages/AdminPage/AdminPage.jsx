@@ -28,10 +28,10 @@ export default function AdminPage()
       }, []);
     
 
-    // if (currentUser.usertype !== "admin")
-    // {
-    //     return(<h1>You're unauthorized here!</h1>)
-    // }
+    if (currentUser.usertype !== "admin")
+    {
+        return(<h1>You're unauthorized here!</h1>)
+    }
 
 
     const handleSelection = (item) =>
