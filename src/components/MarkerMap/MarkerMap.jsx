@@ -9,6 +9,8 @@ import { markerDir } from '../../../atom';
 import { loginSts, tiers } from '../../../atom';
 import ControlPanel from './ControlPanel';
 
+import debounce from 'lodash.debounce';
+
 
 // import {MapRef} from 'react-map-gl';
 // import {myVariable} from "./datatest"
@@ -57,10 +59,16 @@ export default function MarkerMap({mapSize, mapData}) {
 
   const onSelectCity = useCallback(({longitude, latitude},zoomlevel) => {
     console.log(zoomlevel,longitude, latitude)
+
     mapRef.current?.flyTo({center: [longitude, latitude], duration: 5000, zoom: zoomlevel});
+
   }, []);
 
-  markerService(onSelectCity,mapData,data)
+  const debouncedMarkerService = debounce(markerService, 1000);
+
+  // markerService(onSelectCity,mapData,data)
+  debouncedMarkerService(onSelectCity, mapData, data);
+
   
   // const togglePopup = useCallback(() => {
   //   markerRef.current?.togglePopup();
@@ -95,10 +103,11 @@ export default function MarkerMap({mapSize, mapData}) {
           longitude: -10,
           zoom: 0,
           bearing: 0,
-          pitch: 0
+          pitch: 0,
         }}
         mapStyle={mapStyle}
         mapboxAccessToken={MAPBOX_TOKEN}
+        onScroll={{ passive: true }}
         // style={{width: "50vw",height: "500vh"}}
       >
         <div style={{zIndex:"-1"}}>
