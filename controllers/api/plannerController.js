@@ -106,7 +106,7 @@ const getDetails = async (req,res) => {
     try
     {
         
-        const text = `SELECT id,name,date,title,startdate,enddate,locations,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
+        const text = `SELECT id,name,date,title,startdate,enddate,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
         JOIN planner ON users.id = planner.user_id
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         WHERE planner_items.planner_id=$1`;

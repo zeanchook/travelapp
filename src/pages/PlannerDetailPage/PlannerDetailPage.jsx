@@ -66,12 +66,12 @@ export default function PlannerDetailPage()
           console.log(results,detailResults)
 
           const plannerUser = {};
-          detailResults.map(item => {
+          results.map(item => {
             
             if (!plannerUser["id"]) {
                 plannerUser["id"] = item.id;
             }})
-        console.log(plannerUser)
+        console.log(plannerUser,user)
 
         if(plannerUser.id === user.id)
         {
@@ -86,6 +86,7 @@ export default function PlannerDetailPage()
           setmarkerDirection({selected : detailResults , type: "planoverview"})
           setLoadingSts(false)
         }
+        console.log(plannerId)
         getPlannerList(plannerId);
       }, [plannerId, reloadState, user.id]);
 
