@@ -122,7 +122,7 @@ console.log(selectedPlanner)
 
 const onSelectCity = React.useCallback(({longitude, latitude},zoomlevel) => {
   console.log(longitude, latitude)
-  mapRef.current?.flyTo({center: [longitude, latitude], duration: 15000, zoom: zoomlevel});
+  mapRef.current?.flyTo({center: [longitude, latitude], duration: 10000, zoom: zoomlevel});
 }, []);
 
 onSelectCity(viewState,0.5)
