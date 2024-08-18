@@ -2,6 +2,7 @@ import { logOut } from "../../utilities/users-service";
 import { useAtom } from "jotai";
 import { loginSts } from "../../../atom";
 import { useNavigate } from "react-router-dom";
+import React from "react";
 
 export default function NavBar() {
   const [user,setUser] = useAtom(loginSts);

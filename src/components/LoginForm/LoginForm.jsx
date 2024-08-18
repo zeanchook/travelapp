@@ -1,8 +1,9 @@
 import debug from "debug";
-import { useNavigate } from "react-router-dom";
 import { login } from "../../utilities/users-service";
 import { useAtom } from "jotai";
 import { loginSts } from "../../../atom";
+import PropTypes from "prop-types";
+import React from "react";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,8 +11,13 @@ import 'react-toastify/dist/ReactToastify.css';
 const log = debug("mern:components:LoginForm");
 
 export default function LoginForm({setOptions }) {
-  const navigate = useNavigate();
+
+  // eslint-disable-next-line no-unused-vars
   const [user,setUser] = useAtom(loginSts);
+
+  LoginForm.propTypes = {
+    setOptions: PropTypes.object,
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();

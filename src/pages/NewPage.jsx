@@ -1,4 +1,6 @@
+import React from "react"
 import MarkerMap from "../components/MarkerMap/MarkerMap"
+
 export default function NewPage()
 {
     return(

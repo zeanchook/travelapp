@@ -1,5 +1,6 @@
 import { loginSts } from "../../../atom"
 import { useAtomValue } from "jotai"
+import React from "react"
 
 export default function UserProfilePage2()
 { 

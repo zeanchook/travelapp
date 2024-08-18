@@ -1,11 +1,31 @@
-const mongoose = require("mongoose");
-const debug = require("debug")("mern:config:database");
+// const debug = require("debug")("pern:config:database");
+const { Pool } = require("pg");
+const connectionString = process.env.PGDB_URL;
 
-mongoose.set("debug", true);
-mongoose.connect(process.env.DATABASE_URL);
-
-const db = mongoose.connection;
-
-db.on("connected", function () {
-  debug(`Connected to ${db.name} at ${db.host}:${db.port}`);
+const pool = new Pool({
+  connectionString,
 });
+
+const checkDbConnection = async () => {
+  try {
+    const client = await pool.connect();
+    console.log(
+      `Connected to PostgreSQL database at ${client.host}, Port:${client.port}`,
+    );
+    client.release();
+  } catch (err) {
+    console.error("Error connecting to the database", err.stack);
+    process.exit(-1);
+  }
+};
+
+checkDbConnection();
+
+pool.on("error", (err) => {
+  console.error("Unexpected error on idle client", err);
+  process.exit(-1);
+});
+
+module.exports = pool;
+
+//

@@ -1,9 +1,9 @@
 // export default function CalenderPicker()
-import React, {useState} from "react";
+import React from "react";
 import Datepicker from "react-tailwindcss-datepicker";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { currentSelectedRange } from "../../../atom";
-import dayjs from "dayjs";
+
 
 
 export default function CalenderPicker(){
