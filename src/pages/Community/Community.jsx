@@ -34,6 +34,7 @@ export default function Community() {
     async function getPost() {
       setLoadingMsg2(true);
       const resposne = await getStats();
+      console.log(typeof(resposne))
       const reducedData = await resposne.reduce((acc, current) => {
         const existingPlanner = acc.find(
           (planner) => planner.planner_id === current.planner_id
