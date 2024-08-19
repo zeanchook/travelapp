@@ -1,197 +1,164 @@
-const connectionString = process.env.PGDB_URL;
-const pg = require("pg");
-const { Pool, Client } = pg;
-const { getUser } = require('../../config/checkToken');
+const pool = require("../../config/database");
+const { getUser } = require("../../config/checkToken");
 
-const create = async (req,res) => {
-    // debug("body: %o", req.body);
-    console.log(req.body);
-    const { title, startDate , endDate , daysLength } = req.body
-    console.log(title, startDate , endDate , daysLength)
+const create = async (req, res) => {
+  // debug("body: %o", req.body);
+  console.log(req.body);
+  const { title, startDate, endDate, daysLength } = req.body;
+  console.log(title, startDate, endDate, daysLength);
 
-    const pool = new Pool({
-        connectionString,
-        });
+  const currentUser = getUser(req, res);
+  console.log(currentUser);
+  const [user] = currentUser;
+  const { name } = user;
+  console.log(name);
 
-    const currentUser = getUser(req, res);
-    console.log(currentUser)
-    const [ user ] = currentUser
-    const { name } = user
-    console.log(name)
+  try {
+    // find user
+    const text = "SELECT id FROM users WHERE name=$1";
+    const values = [name];
+    const response = await pool.query(text, values);
+    console.log("this is the response", response.rows);
+    const [responseResult] = response.rows;
+    const { id } = responseResult;
 
-    try
-    {
-        // find user
-        const text = "SELECT id FROM users WHERE name=$1";
-        const values = [name];
-        const response = await pool.query(text,values);
-        console.log("this is the response", response.rows)
-        const [responseResult] = response.rows
-        const { id } = responseResult
+    //creating planner
+    const plannerQuery =
+      "INSERT INTO planner (user_id, title, startdate, enddate, dayslength, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+    const plannerValues = [
+      id,
+      title,
+      startDate,
+      endDate,
+      daysLength,
+      "Planned",
+    ];
+    const plannerResponse = await pool.query(plannerQuery, plannerValues);
+    const [plannerItems] = plannerResponse.rows;
+    console.log("37", plannerItems.plannerid);
+    console.log("38", plannerItems);
 
-        //creating planner
-        const plannerQuery = "INSERT INTO planner (user_id, title, startdate, enddate, dayslength, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *"
-        const plannerValues = [id, title, startDate , endDate , daysLength, "Planned"]
-        const plannerResponse = await pool.query(plannerQuery,plannerValues);
-        const [ plannerItems ] = plannerResponse.rows
-        console.log("37",plannerItems.plannerid)
-        console.log("38",plannerItems)
-
-        //creating planner_items
-        const query = {text: 
-            `INSERT INTO planner_items (date,planner_id) 
+    //creating planner_items
+    const query = {
+      text: `INSERT INTO planner_items (date,planner_id) 
             SELECT generate_series(p.startdate, p.enddate, INTERVAL '1 day') , $1
             FROM planner AS p
             WHERE p.plannerid=$1`,
-            values:[plannerItems.plannerid]}
+      values: [plannerItems.plannerid],
+    };
 
-        await pool.query(query);
-        res.status(201).json(plannerItems.plannerid);
-    }
-    catch(error)
-    {
-        console.log(error)
-        res.status(500).json( {error: error.detail, hint: error.hint} );
-    }
+    await pool.query(query);
+    res.status(201).json(plannerItems.plannerid);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.detail, hint: error.hint });
+  }
 };
 
-const index = async (req,res) => {
+const index = async (req, res) => {
+  console.log(req.body);
+  const [visitedUser] = req.body;
 
-    console.log(req.body)
-    const [visitedUser] = req.body
-    const pool = new Pool({
-        connectionString,
-        });
+  const currentUser = getUser(req, res);
+  const [user] = currentUser;
+  const { name } = user;
+  console.log(name);
 
-    const currentUser = getUser(req, res);
-    const [ user ] = currentUser
-    const { name } = user
-    console.log(name)
-    
-    try
-    {
-
-        //update total location before query        
-        const text = `SELECT * FROM users
+  try {
+    //update total location before query
+    const text = `SELECT * FROM users
         JOIN planner ON users.id = planner.user_id
         WHERE users.name = $1`;
-        const values = [visitedUser.name];
-        const response = await pool.query(text,values);
-        console.log(response.rows.length)
-        res.status(201).json(response.rows);
-       
-    }
-    catch(error)
-    {
-        // debug("error: %o", error);
-        console.log(error)
-        res.status(500).json( {error: error.detail} );
-    }
+    const values = [visitedUser.name];
+    const response = await pool.query(text, values);
+    console.log(response.rows.length);
+    res.status(201).json(response.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
 };
 
+const getDetails = async (req, res) => {
+  console.log("passes thru");
+  const { id } = req.params;
+  console.log("here,", id);
 
-const getDetails = async (req,res) => {
-
-    console.log("passes thru")
-    const { id } = req.params
-    console.log("here,",id)
-    const pool = new Pool({
-        connectionString,
-        });
-
-    const currentUser = getUser(req, res);
-    const [ user ] = currentUser
-    const { name } = user
-    console.log(name)
-    try
-    {
-        
-        const text = `SELECT id,name,date,title,startdate,enddate,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
+  const currentUser = getUser(req, res);
+  const [user] = currentUser;
+  const { name } = user;
+  console.log(name);
+  try {
+    const text = `SELECT id,name,date,title,startdate,enddate,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
         JOIN planner ON users.id = planner.user_id
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         WHERE planner_items.planner_id=$1`;
-        const values = [id];
-        const response = await pool.query(text,values);
-        // console.log("this is the response", response.rows)
-        res.status(201).json(response.rows);
-       
-    }
-    catch(error)
-    {
-        // debug("error: %o", error);
-        // console.log(error)
-        res.status(500).json( {error: error.detail} );
-    }
+    const values = [id];
+    const response = await pool.query(text, values);
+    // console.log("this is the response", response.rows)
+    res.status(201).json(response.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    // console.log(error)
+    res.status(500).json({ error: error.detail });
+  }
 };
 
-const getEachDetails = async(req,res) =>
-{
-    console.log("passes thru")
-    const { id } = req.params
-    console.log("here,",id)
-    const pool = new Pool({
-        connectionString,
-        });
+const getEachDetails = async (req, res) => {
+  console.log("passes thru");
+  const { id } = req.params;
+  console.log("here,", id);
 
-    const currentUser = getUser(req, res);
-    const [ user ] = currentUser
-    // const { name } = user
-    // console.log(name)
+  const currentUser = getUser(req, res);
+  // eslint-disable-next-line no-unused-vars
+  const [user] = currentUser;
+  // const { name } = user
+  // console.log(name)
 
-    // // JOIN planner_items ON planner_items.planner_id = planner.id
-    try
-    {
-        
-        const text = `SELECT * FROM users
+  // // JOIN planner_items ON planner_items.planner_id = planner.id
+  try {
+    const text = `SELECT * FROM users
         JOIN planner ON users.id = planner.user_id
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
         WHERE planner_items.planner_id=$1`;
-        // WHERE users.name=$1 AND planner_items.planner_id=$2`;
-        // const values = [name,id];
-        const values = [id];
-        const response = await pool.query(text,values);
-        console.log("this is the response", response.rows)
-        // console.log(response.rows.length)
-        res.status(201).json(response.rows);
-       
-    }
-    catch(error)
-    {
-        console.log(error)
-        res.status(500).json( {error: error.detail} );
-    }
-}
+    // WHERE users.name=$1 AND planner_items.planner_id=$2`;
+    // const values = [name,id];
+    const values = [id];
+    const response = await pool.query(text, values);
+    console.log("this is the response", response.rows);
+    // console.log(response.rows.length)
+    res.status(201).json(response.rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
+};
 
-const addtoItinerary = async (req,res) => {
+const addtoItinerary = async (req, res) => {
+  console.log("passes thru");
+  const { planneritemsid } = req.params;
+  console.log("here,", planneritemsid);
+  const { planner_items_id, name, locations, plannerId, coverphoto } = req.body;
+  console.log(coverphoto);
 
-    console.log("passes thru")
-    const { planneritemsid } = req.params
-    console.log("here,",planneritemsid)
-    const { planner_items_id, name, locations, plannerId, coverphoto} = req.body
-    console.log(coverphoto)
-    
-    // console.log(req.body)
-    const pool = new Pool({
-        connectionString,
-        });
+  // console.log(req.body)
 
-    try
-    {
-        
-        const text1 = `INSERT INTO planner_location_items (planner_items_id,placename,locations)  VALUES($1,$2,$3)`;
-        const values1 = [parseInt(planner_items_id), name, locations];
-        const response1 = await pool.query(text1,values1);
+  try {
+    const text1 = `INSERT INTO planner_location_items (planner_items_id,placename,locations)  VALUES($1,$2,$3)`;
+    const values1 = [parseInt(planner_items_id), name, locations];
+    const response1 = await pool.query(text1, values1);
 
-        // console.log("this is the response", response1.rows)
-        const text2 = `SELECT coverphoto FROM planner
+    // console.log("this is the response", response1.rows)
+    const text2 = `SELECT coverphoto FROM planner
         WHERE plannerid = $1`;
-        const values2 = [plannerId];
-        const respons2 = await pool.query(text2,values2);
-        console.log("respons2",respons2.rows)
+    const values2 = [plannerId];
+    const respons2 = await pool.query(text2, values2);
+    console.log("respons2", respons2.rows);
 
-        //patching total location 
-        const patching = `UPDATE planner
+    //patching total location
+    const patching = `UPDATE planner
         SET ref_count = (
         SELECT COUNT(*) FROM users
         JOIN planner ON users.id = planner.user_id
@@ -200,332 +167,248 @@ const addtoItinerary = async (req,res) => {
         WHERE plannerid = $1)
         WHERE plannerid = $1`;
 
-        const patchingVal = [plannerId];
-        const patchingResponse = await pool.query(patching,patchingVal);
-        console.log("??",patchingResponse)
+    const patchingVal = [plannerId];
+    const patchingResponse = await pool.query(patching, patchingVal);
+    console.log("??", patchingResponse);
 
-        if(respons2.rows[0].coverphoto === null)
-        {
-            const text3 = `UPDATE planner
+    if (respons2.rows[0].coverphoto === null) {
+      const text3 = `UPDATE planner
             SET coverphoto = $1 WHERE plannerid = $2`;
-            const values3 = [coverphoto,plannerId];
-            const respons3 = await pool.query(text3,values3);
-            console.log("respons3",respons3.rows);
-            
-            // res.status(201).json(respons3.rows);
-        }
+      const values3 = [coverphoto, plannerId];
+      const respons3 = await pool.query(text3, values3);
+      console.log("respons3", respons3.rows);
 
-        console.log("or here die ?")
-        // // console.log(response.rows.length)
-        res.status(201).json(response1.rows);
-       
+      // res.status(201).json(respons3.rows);
     }
-    catch(error)
-    {
-        // debug("error: %o", error);
-        console.log(error)
-        res.status(500).json( {error: error.detail} );
-    }
+
+    console.log("or here die ?");
+    // // console.log(response.rows.length)
+    res.status(201).json(response1.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
 };
 
+const patchItinerary = async (req, res) => {
+  //    console.log(req.body)
 
-const patchItinerary = async (req,res) => {
+  const { A_PlannerItemID, A_PlannerLocID, B_PlannerItemID, B_PlannerLocID } =
+    req.body;
+  console.log(A_PlannerItemID, A_PlannerLocID, B_PlannerItemID, B_PlannerLocID);
+  // console.log(req.body)
 
-//    console.log(req.body)
-
-const { A_PlannerItemID , A_PlannerLocID , B_PlannerItemID , B_PlannerLocID} = req.body
-console.log(A_PlannerItemID , A_PlannerLocID , B_PlannerItemID , B_PlannerLocID)
-    // console.log(req.body)
-    const pool = new Pool({
-        connectionString,
-        });
-
-
-    try
-    {
-        //temp value
-        const text1 = `UPDATE planner_location_items
+  try {
+    //temp value
+    const text1 = `UPDATE planner_location_items
         SET plannerlocationitemsid = $1 WHERE planner_items_id = $2 AND planner_location_items.plannerlocationitemsid = $3`;
-        const values1 = [0, A_PlannerItemID, A_PlannerLocID];
-        const response1 = await pool.query(text1,values1);
-        console.log("this is the response", response1.rows)
+    const values1 = [0, A_PlannerItemID, A_PlannerLocID];
+    const response1 = await pool.query(text1, values1);
+    console.log("this is the response", response1.rows);
 
-        //update B
-        const text2 = `UPDATE planner_location_items
+    //update B
+    const text2 = `UPDATE planner_location_items
         SET plannerlocationitemsid = $1 WHERE planner_items_id = $2 AND planner_location_items.plannerlocationitemsid = $3`;
-        const value2 = [A_PlannerLocID, B_PlannerItemID, B_PlannerLocID];
-        const response2 = await pool.query(text2,value2);
-        console.log("this is the response", response2.rows)
+    const value2 = [A_PlannerLocID, B_PlannerItemID, B_PlannerLocID];
+    const response2 = await pool.query(text2, value2);
+    console.log("this is the response", response2.rows);
 
-        //update A
-        const text3 = `UPDATE planner_location_items
+    //update A
+    const text3 = `UPDATE planner_location_items
         SET plannerlocationitemsid = $1 WHERE planner_items_id = $2 AND planner_location_items.plannerlocationitemsid = $3`;
-        const value3 = [B_PlannerLocID, A_PlannerItemID, 0];
-        const resposne3 = await pool.query(text3,value3);
-        console.log("this is the response", resposne3.rows)
+    const value3 = [B_PlannerLocID, A_PlannerItemID, 0];
+    const resposne3 = await pool.query(text3, value3);
+    console.log("this is the response", resposne3.rows);
     //     // // console.log(response.rows.length)
-        // res.status(201).json(response2.rows);
-       
-    }
-    catch(error)
-    {
-        // debug("error: %o", error);
-        console.log(error)
-        res.status(500).json( {error: error.detail} );
-    }
+    // res.status(201).json(response2.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
 };
 
-const patchDaysItinerary = async (req,res) => {
+const patchDaysItinerary = async (req, res) => {
+  //    console.log(req.body)
 
-    //    console.log(req.body)
-    
-    const { A_PlannerItemID , A_PlannerLocID , B_PlannerItemID} = req.body
-    console.log(A_PlannerItemID , A_PlannerLocID , B_PlannerItemID)
-        // console.log(req.body)
-        const pool = new Pool({
-            connectionString,
-            });
-    
-        try
-        {
-            //query1
-            const text1 = `UPDATE planner_location_items
+  const { A_PlannerItemID, A_PlannerLocID, B_PlannerItemID } = req.body;
+  console.log(A_PlannerItemID, A_PlannerLocID, B_PlannerItemID);
+  // console.log(req.body)
+
+  try {
+    //query1
+    const text1 = `UPDATE planner_location_items
             SET planner_items_id = $3 
             WHERE planner_location_items.plannerlocationitemsid = $2
             AND planner_location_items.planner_items_id = $1`;
-            const values1 = [A_PlannerItemID , A_PlannerLocID , B_PlannerItemID];
-            const response1 = await pool.query(text1,values1);
-            console.log("this is the response", response1.rows)
-    
+    const values1 = [A_PlannerItemID, A_PlannerLocID, B_PlannerItemID];
+    const response1 = await pool.query(text1, values1);
+    console.log("this is the response", response1.rows);
 
-            res.status(201).json(response1.rows);
-           
-        }
-        catch(error)
-        {
-            // debug("error: %o", error);
-            console.log(error)
-            res.status(500).json( {error: error.detail} );
-        }
-    };
+    res.status(201).json(response1.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
+};
 
-    const deletePlanner = async (req,res) => {
+const deletePlanner = async (req, res) => {
+  //    console.log(req.body)
 
-        //    console.log(req.body)
-        
-        const { id } = req.params
-        console.log(id)
-            const pool = new Pool({
-                connectionString,
-                });
-        
-            try
-            {
-                // delete planner location items first
-                const text1 = `DELETE FROM planner_location_items
+  const { id } = req.params;
+  console.log(id);
+
+  try {
+    // delete planner location items first
+    const text1 = `DELETE FROM planner_location_items
                 WHERE planner_items_id IN (SELECT planner_items_id FROM planner_items WHERE planner_id 
                     IN (SELECT plannerid FROM planner WHERE plannerid = $1))`;
-                const values1 = [id];
+    const values1 = [id];
 
-                const response1 = await pool.query(text1,values1);
-                console.log("this is the response", response1.rows)
+    const response1 = await pool.query(text1, values1);
+    console.log("this is the response", response1.rows);
 
-
-                // delete planner_items
-                const text2 = `DELETE FROM planner_items
+    // delete planner_items
+    const text2 = `DELETE FROM planner_items
                 WHERE planner_items.planner_id IN (SELECT plannerid FROM planner WHERE plannerid = $1)`;
-                const values2 = [id];
+    const values2 = [id];
 
-                const response2 = await pool.query(text2,values2);
-                console.log("this is the response", response2.rows)
+    const response2 = await pool.query(text2, values2);
+    console.log("this is the response", response2.rows);
 
-                // delete planner_items
-                const text3 = `DELETE FROM planner
+    // delete planner_items
+    const text3 = `DELETE FROM planner
                 WHERE plannerid = $1`;
-                const values3 = [id];
+    const values3 = [id];
 
-                const response3 = await pool.query(text3,values3);
-                console.log("this is the response", response3.rows)
+    const response3 = await pool.query(text3, values3);
+    console.log("this is the response", response3.rows);
 
-                console.log("this is the response", response3)
-                res.status(201).json(response3.rows);
-               
-            }
-            catch(error)
-            {
-                // debug("error: %o", error);
-                console.log(error)
-                res.status(500).json( {error: error.detail} );
-            }
-        };
+    console.log("this is the response", response3);
+    res.status(201).json(response3.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
+};
 
+const patchPlanner = async (req, res) => {
+  //    console.log(req.body)
 
-        const patchPlanner = async (req,res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  console.log(status);
+  console.log(id);
 
-            //    console.log(req.body)
-            
-            const { id } = req.params
-            const { status } = req.body
-            console.log(status)
-            console.log(id)
-                const pool = new Pool({
-                    connectionString,
-                    });
-
-                
-            
-                try
-                {
-                    const text1 = `update planner
+  try {
+    const text1 = `update planner
                     set status = $1 where plannerid = $2`;
-                    const values1 = [status,id];
-    
-                    const response1 = await pool.query(text1,values1);
-                    console.log("this is the response", response1.rows)
-                    res.status(201).json(response1.rows);
-               
-                }
-                catch(error)
-                {
-                    // debug("error: %o", error);
-                    console.log(error)
-                    res.status(500).json( {error: error.detail} );
-                }
-            };
+    const values1 = [status, id];
 
+    const response1 = await pool.query(text1, values1);
+    console.log("this is the response", response1.rows);
+    res.status(201).json(response1.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
+};
 
-            const getUserPlannerStats = async (req,res) => {
+const getUserPlannerStats = async (req, res) => {
+  const user = req.body;
 
-                const  user  = (req.body)
-                    const pool = new Pool({
-                        connectionString,
-                        });
-    
-                    console.log(user)
-                
-                    try
-                    {
-                        const text1 = `SELECT users.name, planner.title, planner.status,users.views
+  console.log(user);
+
+  try {
+    const text1 = `SELECT users.name, planner.title, planner.status,users.views
                         FROM users
                         JOIN planner ON users.id = planner.user_id
                         JOIN planner_items ON planner_items.planner_id = planner.plannerid
                         JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
                         WHERE users.id = $1`;
-                        
-                        const values1 = [user.id];
-        
-                        const response1 = await pool.query(text1,values1);
-                        console.log("this is the response", response1.rows)
-                        res.status(201).json(response1.rows);
-                   
-                    }
-                    catch(error)
-                    {
-                        // debug("error: %o", error);
-                        // console.log(error)
-                        // res.status(500).json( {error: error.detail} );
-                    }
-                };
 
-                const getAllPlannerStats = async (req,res) => {
+    const values1 = [user.id];
 
-                        const pool = new Pool({
-                            connectionString,
-                            });
-                            
-                        try
-                        {
-                            const text1 = `SELECT *
+    const response1 = await pool.query(text1, values1);
+    console.log("this is the response", response1.rows);
+    res.status(201).json(response1.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    // console.log(error)
+    // res.status(500).json( {error: error.detail} );
+  }
+};
+
+const getAllPlannerStats = async (req, res) => {
+  try {
+    const text1 = `SELECT *
                             FROM users
                             JOIN planner ON users.id = planner.user_id
                             JOIN planner_items ON planner_items.planner_id = planner.plannerid
-                            JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id`;        
-                            const response1 = await pool.query(text1);
-                            console.log("this is the response", response1.rows)
-                            res.status(201).json(response1.rows);
-                       
-                        }
-                        catch(error)
-                        {
-                            // debug("error: %o", error);
-                            console.log(error)
-                            res.status(500).json( {error: error.detail} );
-                        }
-                    };
+                            JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id`;
+    const response1 = await pool.query(text1);
+    console.log("this is the response", response1.rows);
+    res.status(201).json(response1.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
+};
 
+const deleteItineraryItem = async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
 
-                    
-        
-const deleteItineraryItem = async (req,res) => {
-
-        const { id } = req.params
-        console.log(id)
-        const pool = new Pool({
-            connectionString,
-            });
-            
-        try
-        {
-            const text1 = `DELETE FROM planner_location_items
+  try {
+    const text1 = `DELETE FROM planner_location_items
             WHERE plannerlocationitemsid = $1`;
-            const values1 = [id];     
-            const response1 = await pool.query(text1,values1);
-            console.log("this is the response", response1.rows)
-            res.status(201).json(response1.rows);
-        
-        }
-        catch(error)
-        {
-            // debug("error: %o", error);
-            console.log(error)
-            res.status(500).json( {error: error.detail} );
-        }
-    };
+    const values1 = [id];
+    const response1 = await pool.query(text1, values1);
+    console.log("this is the response", response1.rows);
+    res.status(201).json(response1.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
+};
 
-
-
-
-const testing = async (req,res) => {
-
-    
-    const pool = new Pool({
-        connectionString,
-        });
-    try
-    {
-        
-        const text = `SELECT * FROM users
+const testing = async (req, res) => {
+  try {
+    const text = `SELECT * FROM users
         JOIN planner ON users.id = planner.user_id
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id
         WHERE users.name=$1 AND planner_items.planner_id=$2`;
-        
-        const values = ["admin",2];
-        const response = await pool.query(text,values);
-        console.log("this is the response", response.rows)
-        res.json(response.rows)
-       
-    }
-    catch(error)
-    {
-        // debug("error: %o", error);
-        console.log(error)
-        res.status(500).json( {error: error.detail} );
-    }
+
+    const values = ["admin", 2];
+    const response = await pool.query(text, values);
+    console.log("this is the response", response.rows);
+    res.json(response.rows);
+  } catch (error) {
+    // debug("error: %o", error);
+    console.log(error);
+    res.status(500).json({ error: error.detail });
+  }
 };
 
 module.exports = {
-    create,
-    index,
-    getDetails,
-    addtoItinerary,
-    testing,
-    getEachDetails,
-    patchItinerary,
-    patchDaysItinerary,
-    deletePlanner,
-    patchPlanner,
-    getUserPlannerStats,
-    getAllPlannerStats,
-    deleteItineraryItem
-}
+  create,
+  index,
+  getDetails,
+  addtoItinerary,
+  testing,
+  getEachDetails,
+  patchItinerary,
+  patchDaysItinerary,
+  deletePlanner,
+  patchPlanner,
+  getUserPlannerStats,
+  getAllPlannerStats,
+  deleteItineraryItem,
+};
