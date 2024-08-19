@@ -1,6 +1,6 @@
 const pool = require("../../config/database");
 const { getUser } = require("../../config/checkToken");
-const { redis } = require("../../config/redis");
+const { redisService } = require("../../config/redis");
 const create = async (req, res) => {
   // debug("body: %o", req.body);
   console.log(req.body);
@@ -345,28 +345,15 @@ const getUserPlannerStats = async (req, res) => {
 
 const getAllPlannerStats = async (req, res) => {
   try {
-    console.log(res.locals.user);
-
-    const text1 = `SELECT *
+    const query = `SELECT *
                             FROM users
                             JOIN planner ON users.id = planner.user_id
                             JOIN planner_items ON planner_items.planner_id = planner.plannerid
                             JOIN planner_location_items ON planner_location_items.planner_items_id = planner_items.planner_items_id`;
 
-    const cachedValue = await redis.get(text1);
-    if (cachedValue) {
-      console.log("here??");
-      console.log(cachedValue);
-      res.status(201).json(JSON.parse(cachedValue));
-    } else {
-      console.log("here?");
-      const response1 = await pool.query(text1);
-      await redis.set(text1, JSON.stringify(response1.rows), "EX", 3600);
-      res.status(201).json(response1.rows);
-    }
+    const response = await redisService(query);
+    res.status(201).json(response);
   } catch (error) {
-    // debug("error: %o", error);
-    console.log(error);
     res.status(500).json({ error: error.detail });
   }
 };
@@ -380,7 +367,6 @@ const deleteItineraryItem = async (req, res) => {
             WHERE plannerlocationitemsid = $1`;
     const values1 = [id];
     const response1 = await pool.query(text1, values1);
-    console.log("this is the response", response1.rows);
     res.status(201).json(response1.rows);
   } catch (error) {
     // debug("error: %o", error);
