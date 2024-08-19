@@ -8,17 +8,14 @@ const create = async (req, res) => {
   console.log(title, startDate, endDate, daysLength);
 
   const currentUser = getUser(req, res);
-  console.log(currentUser);
   const [user] = currentUser;
   const { name } = user;
-  console.log(name);
 
   try {
     // find user
     const text = "SELECT id FROM users WHERE name=$1";
     const values = [name];
     const response = await pool.query(text, values);
-    console.log("this is the response", response.rows);
     const [responseResult] = response.rows;
     const { id } = responseResult;
 
@@ -35,8 +32,6 @@ const create = async (req, res) => {
     ];
     const plannerResponse = await pool.query(plannerQuery, plannerValues);
     const [plannerItems] = plannerResponse.rows;
-    console.log("37", plannerItems.plannerid);
-    console.log("38", plannerItems);
 
     //creating planner_items
     const query = {
@@ -50,7 +45,6 @@ const create = async (req, res) => {
     await pool.query(query);
     res.status(201).json(plannerItems.plannerid);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: error.detail, hint: error.hint });
   }
 };
@@ -70,12 +64,10 @@ const index = async (req, res) => {
         JOIN planner ON users.id = planner.user_id
         WHERE users.name = $1`;
     const values = [visitedUser.name];
-    const response = await pool.query(text, values);
-    console.log(response.rows.length);
-    res.status(201).json(response.rows);
+
+    const response = await redisService(text, values);
+    res.status(201).json(response);
   } catch (error) {
-    // debug("error: %o", error);
-    console.log(error);
     res.status(500).json({ error: error.detail });
   }
 };
@@ -95,9 +87,8 @@ const getDetails = async (req, res) => {
         JOIN planner_items ON planner_items.planner_id = planner.plannerid
         WHERE planner_items.planner_id=$1`;
     const values = [id];
-    const response = await pool.query(text, values);
-    // console.log("this is the response", response.rows)
-    res.status(201).json(response.rows);
+    const response = await redisService(text, values);
+    res.status(201).json(response);
   } catch (error) {
     // debug("error: %o", error);
     // console.log(error)

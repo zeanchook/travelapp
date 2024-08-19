@@ -9,15 +9,17 @@ const getRedisUrl = () => {
   throw new Error("REDIS_URL not defined");
 };
 
-const redisService = async (key) => {
-  const cachedValue = await redis.get(key);
+const redisService = async (key, values = null, EX = 300) => {
+  const query = values !== null ? key + values : key;
+  const cachedValue = await redis.get(query);
 
   if (cachedValue) {
     return JSON.parse(cachedValue);
   } else {
-    const response = await pool.query(key);
-    await redis.set(key, JSON.stringify(response.rows), "EX", 300);
-    return JSON.parse(response.rows);
+    const response =
+      values !== null ? await pool.query(key, values) : await pool.query(key);
+    await redis.set(key, JSON.stringify(response.rows), "EX", EX);
+    return response.rows;
   }
 };
 
