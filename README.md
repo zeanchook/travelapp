@@ -1,4 +1,4 @@
-# TRAAPP [Travel App] 
+# TRAAPP [Travel App]
 
 ## Description
 
@@ -9,6 +9,7 @@ But that's not all TRAAPP also allows you to plan your own trips with ease. Crea
 ## Technology Stacks
 
 - PERN stack (Posgress, Express, React, Node)
+- Redis
 - Beekeeper
 - Neon
 - CSS
@@ -22,7 +23,7 @@ But that's not all TRAAPP also allows you to plan your own trips with ease. Crea
 
 ### Deployment
 
-This app is deployed via Render  ➡️  [TRAAPP](https://travelapp-mf7k.onrender.com/)
+This app is deployed via Render ➡️ [TRAAPP](https://travelapp-mf7k.onrender.com/)
 
 ## The Travel App
 
@@ -80,4 +81,4 @@ However, all these features are limited to members only, except for browsing the
 
 ### Summary
 
-Developing everything from scratch can be challenging, but throughout this project, I've learned the importance of simplicity and building small functions that serve specific purposes. As when developing throught the project, the function can get more and more complex. So keeping things straightforward and focusing on creating small, unique functionalities has been key to the project's success. By breaking down tasks into small components, we can ensure a smoother development process. 
+Developing everything from scratch can be challenging, but throughout this project, I've learned the importance of simplicity and building small functions that serve specific purposes. As when developing throught the project, the function can get more and more complex. So keeping things straightforward and focusing on creating small, unique functionalities has been key to the project's success. By breaking down tasks into small components, we can ensure a smoother development process.
