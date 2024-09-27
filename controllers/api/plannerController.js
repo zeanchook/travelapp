@@ -3,9 +3,7 @@ const { getUser } = require("../../config/checkToken");
 const { redisService } = require("../../config/redis");
 const create = async (req, res) => {
   // debug("body: %o", req.body);
-  console.log(req.body);
   const { title, startDate, endDate, daysLength } = req.body;
-  console.log(title, startDate, endDate, daysLength);
 
   const currentUser = getUser(req, res);
   const [user] = currentUser;
@@ -73,14 +71,11 @@ const index = async (req, res) => {
 };
 
 const getDetails = async (req, res) => {
-  console.log("passes thru");
   const { id } = req.params;
-  console.log("here,", id);
-
-  const currentUser = getUser(req, res);
-  const [user] = currentUser;
-  const { name } = user;
-  console.log(name);
+  // const currentUser = getUser(req, res);
+  // const [user] = currentUser;
+  // const { name } = user;
+  // console.log(name);
   try {
     const text = `SELECT id,name,date,title,startdate,enddate,planner.status,planner.plannerid,planner_items.planner_items_id FROM users
         JOIN planner ON users.id = planner.user_id
@@ -90,17 +85,12 @@ const getDetails = async (req, res) => {
     const response = await redisService(text, values);
     res.status(201).json(response);
   } catch (error) {
-    // debug("error: %o", error);
-    // console.log(error)
     res.status(500).json({ error: error.detail });
   }
 };
 
 const getEachDetails = async (req, res) => {
-  console.log("passes thru");
   const { id } = req.params;
-  console.log("here,", id);
-
   const currentUser = getUser(req, res);
   // eslint-disable-next-line no-unused-vars
   const [user] = currentUser;
@@ -118,8 +108,6 @@ const getEachDetails = async (req, res) => {
     // const values = [name,id];
     const values = [id];
     const response = await pool.query(text, values);
-    console.log("this is the response", response.rows);
-    // console.log(response.rows.length)
     res.status(201).json(response.rows);
   } catch (error) {
     console.log(error);
@@ -133,8 +121,6 @@ const addtoItinerary = async (req, res) => {
   console.log("here,", planneritemsid);
   const { planner_items_id, name, locations, plannerId, coverphoto } = req.body;
   console.log(coverphoto);
-
-  // console.log(req.body)
 
   try {
     const text1 = `INSERT INTO planner_location_items (planner_items_id,placename,locations)  VALUES($1,$2,$3)`;
